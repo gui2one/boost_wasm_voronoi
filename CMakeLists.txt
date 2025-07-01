@@ -22,6 +22,16 @@ target_include_directories(
     C:/Users/Sprayfly/AppData/Local/emsdk/upstream/emscripten
 )
 
+# Detect compiler and disable warnings accordingly
+if(MSVC)
+    # Disable warnings for MSVC
+    target_compile_options(${PROJECT_NAME} PRIVATE /w)
+else()
+    # Disable warnings for GCC, Clang, or Emscripten (which uses Clang)
+    target_compile_options(${PROJECT_NAME} PRIVATE -w)
+endif()
+
+
 if(EMSCRIPTEN)
 
 
@@ -39,7 +49,8 @@ target_compile_options(
         "-lembind"
         "-sEXPORT_ES6=1"
         "-sMODULARIZE=1"
-        "-sEXPORT_NAME=Foo"
+        "-sEXPORT_NAME=Voronoi"
+        
         "-sEXPORTED_FUNCTIONS=_malloc,_free"
 )
 
