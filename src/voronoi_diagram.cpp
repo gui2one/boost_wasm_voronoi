@@ -14,11 +14,7 @@ Diagram build_diagram(std::vector<double> fpoints) {
   for (size_t i = 0; i < fpoints.size(); i += 2) {
     points.push_back({fpoints[i], fpoints[i + 1]});
   }
-  std::cout << "Points: " << points.size() << std::endl;
-  for (auto &point : points) {
-    std::cout << point.x() << " " << point.y() << std::endl;
-  }
-  std::cout << "-----------------------\n";
+
   voronoi_diagram<double> vd;
   construct_voronoi(points.begin(), points.end(), &vd);
 
@@ -28,13 +24,13 @@ Diagram build_diagram(std::vector<double> fpoints) {
   Diagram diagram;
 
   for (const auto &cell : vd.cells()) {
-    std::cout << "Cell: site " << cell.source_index() << "\n";
+
     Cell my_cell = {cell.source_index()};
 
     diagram.cells.push_back(my_cell);
   }
   for (auto &edge : vd.edges()) {
-    // std::cout << "Edge: " << edge.cell()->source_index() << "\n";
+
     Edge my_edge;
     my_edge.vertex0 = {(double)edge.vertex0()->x(),
                        (double)edge.vertex0()->y()};

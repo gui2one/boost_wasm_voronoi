@@ -42,6 +42,7 @@ target_compile_options(
     ${PROJECT_NAME} PUBLIC
     "-sSHARED_MEMORY=1"
     
+    
     )
     
     target_link_options(
@@ -51,8 +52,9 @@ target_compile_options(
         "-sEXPORT_ES6=1"
         "-sMODULARIZE=1"
         "-sEXPORT_NAME=Voronoi"
-        
+        "-sALLOW_MEMORY_GROWTH=1"
         "-sEXPORTED_FUNCTIONS=_malloc,_free"
+        "-sASSERTIONS"
 )
 
 

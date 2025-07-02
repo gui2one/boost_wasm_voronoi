@@ -4,5 +4,5 @@ $build_dir = "./build_wasm"
 CreateFolder($build_dir)
 
 # $em_root = "C:\Users\Sprayfly\AppData\Local\emsdk\upstream\emscripten\"
-emcmake cmake -B $build_dir
+emcmake cmake -B $build_dir 
 
