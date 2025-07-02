@@ -117,5 +117,5 @@
     "C:/Users/Sprayfly/AppData/Local/emsdk/upstream/emscripten/system/libcxx",
     "C:/Users/Sprayfly/AppData/Local/emsdk/upstream/emscripten/system/libcxxabi"
   ],
-  "C_Cpp.default.compilerPath": "C:\\Users\\Sprayfly\\AppData\\Local\\emsdk\\upstream\\emscripten\\em++.bat"
+  "C_Cpp.default.compilerPath": "C:/Users/Sprayfly/AppData/Local/emsdk/upstream/emscripten/em++.bat"
 }

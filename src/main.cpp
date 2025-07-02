@@ -2,12 +2,15 @@
 
 #include <boost/polygon/voronoi.hpp>
 
+#ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #include <emscripten/bind.h>
+#endif
 #include <string>
 #include <vector>
 
 using namespace boost::polygon;
+#ifdef __EMSCRIPTEN__
 template <typename T> std::vector<T> to_vector(emscripten::val array) {
   size_t size = array["length"].as<size_t>();
   std::vector<T> result(size);
@@ -16,19 +19,20 @@ template <typename T> std::vector<T> to_vector(emscripten::val array) {
   memoryView.call<void>("set", array);
   return result;
 }
+#endif
 struct Diagram {
 
   std::vector<size_t> cells;
 };
 
-void print_hello(char *name) {
+void print_hello(const char *name) {
   std::cout << "Hello, " << name << "! from c++" << std::endl;
 }
-
+#ifdef __EMSCRIPTEN__
 void print_hello_wrapper(emscripten::val name) {
   print_hello(to_vector<char>(name).data());
 }
-
+#endif
 Diagram build_diagram(std::vector<float> fpoints) {
   std::vector<point_data<float>> points;
   for (size_t i = 0; i < fpoints.size(); i += 2) {
@@ -48,12 +52,12 @@ Diagram build_diagram(std::vector<float> fpoints) {
   }
   return diagram;
 }
-
+#ifdef __EMSCRIPTEN__
 Diagram build_diagram_wrapper(emscripten::val points) {
   auto fpoints = to_vector<float>(points);
   return build_diagram(fpoints);
 }
-
+#endif
 void set_data(std::vector<float> data) {
   std::cout << "get_data size : " << data.size() << std::endl;
   for (size_t i = 0; i < data.size(); i++) {
@@ -61,13 +65,15 @@ void set_data(std::vector<float> data) {
   }
   std::cout << std::endl;
 }
-
+#ifdef __EMSCRIPTEN__
 // A wrapper that extracts the data pointer and size from a JS typed array
 void set_data_wrapper(emscripten::val typedArray) {
   auto values = to_vector<float>(typedArray);
   set_data(values);
 }
+#endif
 
+#ifdef __EMSCRIPTEN__
 EMSCRIPTEN_BINDINGS(Foo) {
   emscripten::register_vector<float>("VectorFloat");
   emscripten::register_vector<size_t>("VectorSizeT");
@@ -75,4 +81,11 @@ EMSCRIPTEN_BINDINGS(Foo) {
   emscripten::function("set_data", &set_data_wrapper);
   emscripten::function("print_hello", &print_hello_wrapper);
   emscripten::function("build_diagram", &build_diagram_wrapper);
+}
+#endif
+int main() {
+  const char *name = "master";
+  print_hello(name);
+
+  return 0;
 }
