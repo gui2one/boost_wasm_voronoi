@@ -2,7 +2,7 @@
 
 int main() {
   const char *name = "master";
-  print_hello(name);
+  gui2one::print_hello(name);
 
   return 0;
 }

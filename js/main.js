@@ -9,7 +9,7 @@ const chars = string_to_u8array(name);
 voronoi.print_hello(chars);
 
 const points = new Float32Array([1.0, 2.0, 3.0, 4.0]);
-voronoi.set_data(points);
+
 let diagram = voronoi.build_diagram(points);
 console.log(diagram.cells.size());
 for (let i = 0; i < diagram.cells.size(); i++) {
