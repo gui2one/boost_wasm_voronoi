@@ -9,11 +9,16 @@ namespace gui2one {
 void print_hello(const char *name) {
   std::cout << "Hello, " << name << "! from c++" << std::endl;
 }
-Diagram build_diagram(std::vector<float> fpoints) {
-  std::vector<point_data<float>> points;
+Diagram build_diagram(std::vector<double> fpoints) {
+  std::vector<point_data<double>> points;
   for (size_t i = 0; i < fpoints.size(); i += 2) {
-    points.emplace_back(fpoints[i], fpoints[i + 1]);
+    points.push_back({fpoints[i], fpoints[i + 1]});
   }
+  std::cout << "Points: " << points.size() << std::endl;
+  for (auto &point : points) {
+    std::cout << point.x() << " " << point.y() << std::endl;
+  }
+  std::cout << "-----------------------\n";
   voronoi_diagram<double> vd;
   construct_voronoi(points.begin(), points.end(), &vd);
 
@@ -24,7 +29,23 @@ Diagram build_diagram(std::vector<float> fpoints) {
 
   for (const auto &cell : vd.cells()) {
     std::cout << "Cell: site " << cell.source_index() << "\n";
-    diagram.cells.push_back(cell.source_index());
+    Cell my_cell = {cell.source_index()};
+
+    diagram.cells.push_back(my_cell);
+  }
+  for (auto &edge : vd.edges()) {
+    // std::cout << "Edge: " << edge.cell()->source_index() << "\n";
+    Edge my_edge;
+    my_edge.vertex0 = {(double)edge.vertex0()->x(),
+                       (double)edge.vertex0()->y()};
+    my_edge.vertex1 = {(double)edge.vertex1()->x(),
+                       (double)edge.vertex1()->y()};
+    diagram.edges.push_back(my_edge);
+  }
+
+  for (const auto &vertex : vd.vertices()) {
+    Vertex my_vertex = {vertex.x(), vertex.y()};
+    diagram.vertices.push_back(my_vertex);
   }
   return diagram;
 }
@@ -36,18 +57,29 @@ void print_hello_wrapper(emscripten::val name) {
 }
 
 Diagram build_diagram_wrapper(emscripten::val points) {
-  auto fpoints = to_vector<float>(points);
+  auto fpoints = to_vector<double>(points);
   return build_diagram(fpoints);
 }
 
 EMSCRIPTEN_BINDINGS(Foo) {
-  emscripten::class_<Point>("Point")
-      .property("x", &Point::x)
-      .property("y", &Point::y);
-  emscripten::class_<Diagram>("Diagram").property("cells", &Diagram::cells);
+  emscripten::class_<Vertex>("Vertex")
+      .property("x", &Vertex::x)
+      .property("y", &Vertex::y);
+  emscripten::class_<Edge>("Edge")
+      .property("vertex0", &Edge::vertex0)
+      .property("vertex1", &Edge::vertex1);
+  emscripten::class_<Cell>("Cell").property("source_index",
+                                            &Cell::source_index);
+  emscripten::class_<Diagram>("Diagram")
+      .property("cells", &Diagram::cells)
+      .property("vertices", &Diagram::vertices)
+      .property("edges", &Diagram::edges);
 
   emscripten::register_vector<float>("VectorFloat");
   emscripten::register_vector<size_t>("VectorSizeT");
+  emscripten::register_vector<Cell>("VectorCell");
+  emscripten::register_vector<Vertex>("VectorVertex");
+  emscripten::register_vector<Edge>("VectorEdge");
 
   emscripten::function("print_hello", &print_hello_wrapper);
   emscripten::function("build_diagram", &build_diagram_wrapper);

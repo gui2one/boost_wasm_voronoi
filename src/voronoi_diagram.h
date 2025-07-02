@@ -15,13 +15,23 @@
 
 namespace gui2one {
 
-struct Point {
-  float x;
-  float y;
+struct Vertex {
+  double x;
+  double y;
+};
+
+struct Edge {
+  Vertex vertex0;
+  Vertex vertex1;
+};
+struct Cell {
+  size_t source_index;
 };
 
 struct Diagram {
-  std::vector<size_t> cells;
+  std::vector<Cell> cells;
+  std::vector<Vertex> vertices;
+  std::vector<Edge> edges;
 };
 
 void print_hello(const char *name);
