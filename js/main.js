@@ -4,7 +4,7 @@ import Voronoi from "./boost_voronoi.js";
 import { string_to_u8array } from "./utils.js";
 
 let voronoi = await Voronoi();
-let name = "master";
+let name = "gui2one";
 const chars = string_to_u8array(name);
 voronoi.print_hello(chars);
 

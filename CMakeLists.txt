@@ -14,6 +14,7 @@ include_directories(
 )
 add_executable(${PROJECT_NAME}
     src/main.cpp
+    src/voronoi_diagram.cpp
 )
 
 target_include_directories(

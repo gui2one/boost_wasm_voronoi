@@ -6,11 +6,16 @@ function Print([string]$message) {
 Export-ModuleMember -Function Print
 
 
-function CreateFolder([string]$folder_path){
-    if( Test-Path -Path $folder_path -PathType Container){
-        Print("Folder exists already : $folder_path")
-    }else{
+function CreateFolder([string]$folder_path, [bool]$verbose = $false){
+    $exists = Test-Path -Path $folder_path -PathType Container
+    if(-not ($exists)){
+
         New-Item $folder_path -ItemType Directory
+            
+        
+    }elseif ($verbose -eq $true){ 
+        Print("Folder exists already : $folder_path")
+     
     }
 }
 Export-ModuleMember -Function CreateFolder
@@ -26,6 +31,16 @@ function RemoveFolderIfExists([string]$folder_path){
 }
 Export-ModuleMember -Function RemoveFolderIfExists
 
+
+function ClearFolderContent([string]$folder_path){
+    if( Test-Path -Path $folder_path -PathType Container){
+        
+        Get-ChildItem -Path $folder_path | Remove-Item -Recurse -Force
+    }else{
+        Write-Host "[build script] Directory not found : $folder_path"
+    }
+}
+Export-ModuleMember -Function ClearFolderContent
 
 function RemoveFileIfExists([string]$file_path){
     if( Test-Path -Path $file_path -PathType Leaf){
