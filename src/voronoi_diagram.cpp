@@ -41,14 +41,14 @@ Diagram build_diagram_wrapper(emscripten::val points) {
 }
 
 EMSCRIPTEN_BINDINGS(Foo) {
+  emscripten::class_<Point>("Point")
+      .property("x", &Point::x)
+      .property("y", &Point::y);
+  emscripten::class_<Diagram>("Diagram").property("cells", &Diagram::cells);
+
   emscripten::register_vector<float>("VectorFloat");
   emscripten::register_vector<size_t>("VectorSizeT");
 
-  emscripten::value_object<Point>("Point")
-      .field("x", &Point::x)
-      .field("y", &Point::y);
-  emscripten::value_object<Diagram>("Diagram").field("cells", &Diagram::cells);
-  ;
   emscripten::function("print_hello", &print_hello_wrapper);
   emscripten::function("build_diagram", &build_diagram_wrapper);
 }
