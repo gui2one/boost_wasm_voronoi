@@ -34,8 +34,10 @@ struct Diagram {
   std::vector<Edge> edges;
 };
 
+EMSCRIPTEN_KEEPALIVE
 void print_hello(const char *name);
 
+EMSCRIPTEN_KEEPALIVE
 Diagram build_diagram(std::vector<float> fpoints);
 
 #ifdef __EMSCRIPTEN__

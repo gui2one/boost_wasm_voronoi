@@ -6,9 +6,12 @@ using boost::polygon::voronoi_diagram;
 
 namespace gui2one {
 
+EMSCRIPTEN_KEEPALIVE
 void print_hello(const char *name) {
   std::cout << "Hello, " << name << "! from c++" << std::endl;
 }
+
+EMSCRIPTEN_KEEPALIVE
 Diagram build_diagram(std::vector<double> fpoints) {
   std::vector<point_data<double>> points;
   for (size_t i = 0; i < fpoints.size(); i += 2) {
@@ -48,10 +51,12 @@ Diagram build_diagram(std::vector<double> fpoints) {
 
 #ifdef __EMSCRIPTEN__
 
+EMSCRIPTEN_KEEPALIVE
 void print_hello_wrapper(emscripten::val name) {
   print_hello(to_vector<char>(name).data());
 }
 
+EMSCRIPTEN_KEEPALIVE
 Diagram build_diagram_wrapper(emscripten::val points) {
   auto fpoints = to_vector<double>(points);
   return build_diagram(fpoints);
