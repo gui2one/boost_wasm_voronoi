@@ -51,7 +51,7 @@ EMSCRIPTEN_KEEPALIVE
 void print_hello(const char *name);
 
 EMSCRIPTEN_KEEPALIVE
-Diagram build_diagram(std::vector<float> &fpoints);
+Diagram build_diagram(emscripten::val points);
 
 #ifdef __EMSCRIPTEN__
 template <typename T> std::vector<T> to_vector(emscripten::val array) {

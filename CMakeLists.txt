@@ -51,9 +51,10 @@ target_link_options(
     "-sMODULARIZE=1"
     "-sEXPORT_NAME=Voronoi"
     "-sALLOW_MEMORY_GROWTH=1"
-    "-sEXPORTED_FUNCTIONS=_malloc,_free"
     "-sASSERTIONS=2"
     "-sENVIRONMENT=web"
+    "-sINITIAL_MEMORY=32MB"
+    # "-sEXPORTED_FUNCTIONS=_malloc,_free"
 )
 
 

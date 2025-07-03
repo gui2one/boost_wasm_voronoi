@@ -31,31 +31,43 @@ function init() {
     console.log("no context");
     throw new Error("no context");
   }
+
+  ctx.clearRect(0, 0, 512, 512);
   ctx.fillStyle = "red";
   ctx.fillRect(0, 0, 512, 512);
   ctx.fillStyle = "white";
-  for (let i = 0; i < diagram.vertices.size(); i++) {
+  let num_vertices = diagram.vertices.size();
+  let num_edges = diagram.edges.size();
+  let num_cells = diagram.cells.size();
+  ctx.fillText(`${num_vertices} vertices`, 10, 20);
+  ctx.fillText(`${num_edges} edges`, 10, 40);
+  ctx.fillText(`${num_cells} cells`, 10, 60);
+  for (let i = 0; i < num_vertices; i++) {
     let vtx = diagram.vertices.get(i);
     ctx.fillRect(vtx.x - 1, vtx.y - 1, 3, 3);
+
+    vtx.delete();
   }
 
-  for (let i = 0; i < diagram.edges.size(); i++) {
+  diagram.vertices.delete();
+  for (let i = 0; i < num_edges; i++) {
     let edge = diagram.edges.get(i);
     ctx.beginPath();
     ctx.moveTo(edge.vertex0.x, edge.vertex0.y);
     ctx.lineTo(edge.vertex1.x, edge.vertex1.y);
     ctx.stroke();
+
+    edge.delete();
   }
 
-  diagram.vertices.delete();
-  diagram.edges.delete();
-  diagram.cells.delete();
+  // diagram.edges.delete();
+  // diagram.cells.delete();
   diagram.delete();
 }
 
 init();
 
 document.addEventListener("click", () => {
-  console.clear();
+  // console.clear();
   init();
 });

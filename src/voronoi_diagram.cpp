@@ -12,7 +12,8 @@ void print_hello(const char *name) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-Diagram build_diagram(std::vector<double> &fpoints) {
+Diagram build_diagram(emscripten::val emfpoints) {
+  auto fpoints = to_vector<double>(emfpoints);
   std::vector<point_data<double>> points;
   for (size_t i = 0; i < fpoints.size(); i += 2) {
     points.push_back({fpoints[i], fpoints[i + 1]});
@@ -20,6 +21,7 @@ Diagram build_diagram(std::vector<double> &fpoints) {
 
   voronoi_diagram<double> vd;
   construct_voronoi(points.begin(), points.end(), &vd);
+  points.clear();
 
   auto cells = vd.cells();
   auto edges = vd.edges();
@@ -46,7 +48,9 @@ Diagram build_diagram(std::vector<double> &fpoints) {
     Vertex my_vertex = {vertex.x(), vertex.y()};
     diagram.vertices.push_back(my_vertex);
   }
-  points.clear();
+
+  cells.clear();
+  edges.clear();
   vd.clear();
   return diagram;
 }
@@ -59,15 +63,15 @@ void print_hello_wrapper(emscripten::val name) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-std::shared_ptr<Diagram> build_diagram_wrapper(emscripten::val points) {
-  auto fpoints = to_vector<double>(points);
+// std::shared_ptr<Diagram> build_diagram_wrapper(emscripten::val points) {
+//   auto fpoints = to_vector<double>(points);
 
-  auto shared = std::make_shared<Diagram>(build_diagram(fpoints));
+//   auto shared = std::make_shared<Diagram>(build_diagram(fpoints));
 
-  return shared;
-}
+//   return shared;
+// }
 
-EMSCRIPTEN_BINDINGS(Foo) {
+EMSCRIPTEN_BINDINGS(Voronoi) {
   emscripten::class_<Vertex>("Vertex")
       .property("x", &Vertex::x)
       .property("y", &Vertex::y);
@@ -90,7 +94,7 @@ EMSCRIPTEN_BINDINGS(Foo) {
   emscripten::register_vector<Edge>("VectorEdge");
 
   emscripten::function("print_hello", &print_hello_wrapper);
-  emscripten::function("build_diagram", &build_diagram_wrapper);
+  emscripten::function("build_diagram", &build_diagram);
 }
 #endif
 } // namespace gui2one
