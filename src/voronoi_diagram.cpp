@@ -12,7 +12,7 @@ void print_hello(const char *name) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-Diagram build_diagram(std::vector<double> fpoints) {
+Diagram build_diagram(std::vector<double> &fpoints) {
   std::vector<point_data<double>> points;
   for (size_t i = 0; i < fpoints.size(); i += 2) {
     points.push_back({fpoints[i], fpoints[i + 1]});
@@ -46,6 +46,8 @@ Diagram build_diagram(std::vector<double> fpoints) {
     Vertex my_vertex = {vertex.x(), vertex.y()};
     diagram.vertices.push_back(my_vertex);
   }
+  points.clear();
+  vd.clear();
   return diagram;
 }
 
@@ -57,9 +59,12 @@ void print_hello_wrapper(emscripten::val name) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-Diagram build_diagram_wrapper(emscripten::val points) {
+std::shared_ptr<Diagram> build_diagram_wrapper(emscripten::val points) {
   auto fpoints = to_vector<double>(points);
-  return build_diagram(fpoints);
+
+  auto shared = std::make_shared<Diagram>(build_diagram(fpoints));
+
+  return shared;
 }
 
 EMSCRIPTEN_BINDINGS(Foo) {
@@ -72,6 +77,8 @@ EMSCRIPTEN_BINDINGS(Foo) {
   emscripten::class_<Cell>("Cell").property("source_index",
                                             &Cell::source_index);
   emscripten::class_<Diagram>("Diagram")
+      .constructor()
+      .smart_ptr<std::shared_ptr<Diagram>>("Diagram")
       .property("cells", &Diagram::cells)
       .property("vertices", &Diagram::vertices)
       .property("edges", &Diagram::edges);

@@ -7,11 +7,14 @@ let voronoi = await Voronoi();
 let pts = [];
 let canvas = document.createElement("canvas");
 document.body.appendChild(canvas);
+
+let ctx = canvas.getContext("2d");
+
 function init() {
   pts = [];
   for (let i = 0; i < 200; i++) {
-    pts.push(Math.random() * 512);
-    pts.push(Math.random() * 512);
+    pts.push(Math.random() * 256);
+    pts.push(Math.random() * 256);
   }
 
   const points = new Float32Array(pts);
@@ -22,14 +25,12 @@ function init() {
   console.log(diagram.edges.size() + " edges");
   console.log(diagram.vertices.size() + " vertices");
 
-  let ctx = canvas.getContext("2d");
+  canvas.width = 512;
+  canvas.height = 512;
   if (!ctx) {
     console.log("no context");
     throw new Error("no context");
   }
-  canvas.width = 512;
-  canvas.height = 512;
-
   ctx.fillStyle = "red";
   ctx.fillRect(0, 0, 512, 512);
   ctx.fillStyle = "white";
@@ -37,10 +38,24 @@ function init() {
     let vtx = diagram.vertices.get(i);
     ctx.fillRect(vtx.x - 1, vtx.y - 1, 3, 3);
   }
+
+  for (let i = 0; i < diagram.edges.size(); i++) {
+    let edge = diagram.edges.get(i);
+    ctx.beginPath();
+    ctx.moveTo(edge.vertex0.x, edge.vertex0.y);
+    ctx.lineTo(edge.vertex1.x, edge.vertex1.y);
+    ctx.stroke();
+  }
+
+  diagram.vertices.delete();
+  diagram.edges.delete();
+  diagram.cells.delete();
+  diagram.delete();
 }
 
 init();
 
 document.addEventListener("click", () => {
+  console.clear();
   init();
 });

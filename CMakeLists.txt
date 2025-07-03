@@ -40,21 +40,20 @@ set(CMAKE_CXX_FLAGS "-O3")
 
 target_compile_options(
     ${PROJECT_NAME} PUBLIC
-    "-sSHARED_MEMORY=1"
+    "-sSHARED_MEMORY=1" 
+)
     
-    
-    )
-    
-    target_link_options(
-        ${PROJECT_NAME} PUBLIC
-        "-sWASM=1"
-        "-lembind"
-        "-sEXPORT_ES6=1"
-        "-sMODULARIZE=1"
-        "-sEXPORT_NAME=Voronoi"
-        "-sALLOW_MEMORY_GROWTH=1"
-        "-sEXPORTED_FUNCTIONS=_malloc,_free"
-        "-sASSERTIONS"
+target_link_options(
+    ${PROJECT_NAME} PUBLIC
+    "-sWASM=1"
+    "-lembind"
+    "-sEXPORT_ES6=1"
+    "-sMODULARIZE=1"
+    "-sEXPORT_NAME=Voronoi"
+    "-sALLOW_MEMORY_GROWTH=1"
+    "-sEXPORTED_FUNCTIONS=_malloc,_free"
+    "-sASSERTIONS=2"
+    "-sENVIRONMENT=web"
 )
 
 
