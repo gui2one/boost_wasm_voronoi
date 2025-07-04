@@ -47,7 +47,7 @@ extern "C" {
 
 void print_hello(const char *name);
 
-Diagram *build_diagram(const float *points, size_t length);
+Diagram *build_diagram(float *points, size_t length);
 }
 
 } // namespace gui2one

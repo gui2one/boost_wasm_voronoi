@@ -17,14 +17,16 @@ function init() {
   const coords = new Float32Array(numPoints * 2);
   for (let i = 0; i < coords.length; i++) {
     coords[i] = Math.random() * 256;
+    // coords[i] = i;
   }
+  console.log(coords);
 
   // Allocate memory in WASM heap
   const bytes = coords.length * coords.BYTES_PER_ELEMENT;
   const ptr = voronoi._malloc(bytes);
 
   // Copy JS data to WASM heap
-  voronoi.HEAPF32.set(coords, ptr / 4);
+  voronoi.HEAPF32.set(coords, ptr / 4); // divide by coords.BYTES_PER_ELEMENT ?!!
 
   // Call the raw binding
   const diagram = voronoi._build_diagram(ptr, coords.length);

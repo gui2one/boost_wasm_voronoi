@@ -13,11 +13,13 @@ void print_hello(const char *name) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-Diagram *build_diagram(const float *points, size_t len) {
+Diagram *build_diagram(float *points, size_t len) {
   std::vector<point_data<double>> vertices;
 
   for (size_t i = 0; i + 1 < len; i += 2) {
     vertices.push_back({(double)points[i], (double)points[i + 1]});
+
+    std::cout << "vertex: " << points[i] << ", " << points[i + 1] << std::endl;
   }
 
   voronoi_diagram<double> vd;
