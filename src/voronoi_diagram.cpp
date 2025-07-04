@@ -13,33 +13,39 @@ void print_hello(const char *name) {
 }
 
 EMSCRIPTEN_KEEPALIVE
-Diagram build_diagram(double *ptr, size_t length) {
-  std::vector<point_data<double>> points;
-  for (size_t i = 0; i + 1 < length; i += 2) {
-    points.emplace_back(ptr[i], ptr[i + 1]);
+Diagram *build_diagram(const float *points, size_t len) {
+  std::vector<Vertex> vertices;
+  std::vector<Edge> edges;
+  std::vector<Cell> cells;
+
+  for (size_t i = 0; i + 1 < len; i += 2) {
+    vertices.push_back({points[i], points[i + 1]});
+    cells.push_back({(size_t)(i / 2)});
   }
 
-  boost::polygon::voronoi_diagram<double> vd;
-  construct_voronoi(points.begin(), points.end(), &vd);
-
-  Diagram diagram;
-  for (const auto &cell : vd.cells()) {
-    diagram.cells.push_back({cell.source_index()});
+  for (size_t i = 0; i + 3 < len; i += 4) {
+    edges.push_back(
+        {{points[i], points[i + 1]}, {points[i + 2], points[i + 3]}});
   }
 
-  for (const auto &edge : vd.edges()) {
-    Edge e;
-    if (edge.vertex0())
-      e.vertex0 = {edge.vertex0()->x(), edge.vertex0()->y()};
-    if (edge.vertex1())
-      e.vertex1 = {edge.vertex1()->x(), edge.vertex1()->y()};
-    diagram.edges.push_back(e);
-  }
+  auto diagram = (Diagram *)std::malloc(sizeof(Diagram));
+  diagram->num_vertices = vertices.size();
+  diagram->vertices = (Vertex *)std::malloc(sizeof(Vertex) * vertices.size());
+  std::memcpy(diagram->vertices, vertices.data(),
+              sizeof(Vertex) * vertices.size());
 
-  for (const auto &vertex : vd.vertices()) {
-    diagram.vertices.push_back({vertex.x(), vertex.y()});
-  }
+  diagram->num_edges = edges.size();
+  diagram->edges = (Edge *)std::malloc(sizeof(Edge) * edges.size());
+  std::memcpy(diagram->edges, edges.data(), sizeof(Edge) * edges.size());
 
+  diagram->num_cells = cells.size();
+  diagram->cells = (Cell *)std::malloc(sizeof(Cell) * cells.size());
+  std::memcpy(diagram->cells, cells.data(), sizeof(Cell) * cells.size());
+
+  std::cout << "num_vertices : " << diagram->num_vertices << std::endl;
+  std::cout << "num_edges : " << diagram->num_edges << std::endl;
+  std::cout << "num_cells : " << diagram->num_cells << std::endl;
+  std::cout << "C++ ---------------------------------" << std::endl;
   return diagram;
 }
 }

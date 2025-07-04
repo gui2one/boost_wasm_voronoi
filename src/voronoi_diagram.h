@@ -32,26 +32,22 @@ struct Cell {
 class Diagram {
 public:
   Diagram() { std::cout << "Diagram Constructor Called !!!" << std::endl; };
-  ~Diagram() {
-
-    cells.clear();
-    vertices.clear();
-    edges.clear();
-
-    std::cout << "Diagram Destructor Called !!!" << std::endl;
-  };
+  ~Diagram() { std::cout << "Diagram Destructor Called !!!" << std::endl; };
 
 public:
-  std::vector<Cell> cells;
-  std::vector<Vertex> vertices;
-  std::vector<Edge> edges;
+  Cell *cells;
+  size_t num_cells;
+  Vertex *vertices;
+  size_t num_vertices;
+  Edge *edges;
+  size_t num_edges;
 };
 
 extern "C" {
 
 void print_hello(const char *name);
 
-Diagram build_diagram(double *ptr, size_t length);
+Diagram *build_diagram(const float *points, size_t length);
 }
 
 } // namespace gui2one

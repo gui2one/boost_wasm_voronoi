@@ -24,10 +24,22 @@ function init() {
   const ptr = voronoi._malloc(bytes);
 
   // Copy JS data to WASM heap
-  voronoi.HEAPF32.set(coords, ptr / 4);
+  voronoi.HEAPF32.set(coords, ptr / 2);
 
   // Call the raw binding
   const diagram = voronoi._build_diagram(ptr, coords.length);
+
+  // Read fields using getValue
+  const verticesPtr = voronoi.getValue(ptr, "*"); // offset +0
+  const numVertices = voronoi.getValue(ptr + 4, "i32"); // offset +4
+  const edgesPtr = voronoi.getValue(ptr + 8, "*"); // offset +8
+  const numEdges = voronoi.getValue(ptr + 12, "i32"); // offset +12
+  const cellsPtr = voronoi.getValue(ptr + 16, "*"); // offset +16
+  const numCells = voronoi.getValue(ptr + 20, "i32"); // offset +20
+
+  console.log("numVertices : ", numVertices);
+  console.log("numEdges : ", numEdges);
+  console.log("numCells : ", numCells);
 
   // Free memory
   voronoi._free(ptr);

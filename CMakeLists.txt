@@ -55,6 +55,7 @@ target_link_options(
     "-sENVIRONMENT=web"
     "-sINITIAL_MEMORY=64MB"
     "-sEXPORTED_FUNCTIONS=_malloc,_free, _build_diagram"
+    "-sEXPORTED_RUNTIME_METHODS=['ccall','cwrap','getValue','setValue']"
 )
 
 
