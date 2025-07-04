@@ -36,11 +36,11 @@ public:
 
 public:
   size_t num_vertices;
-  Vertex *vertices;
-  size_t num_cells;
-  Cell *cells;
   size_t num_edges;
+  size_t num_cells;
+  Vertex *vertices;
   Edge *edges;
+  Cell *cells;
 };
 
 extern "C" {

@@ -1,10 +1,10 @@
 // @ts-ignore
 import Voronoi from "./boost_voronoi.js";
 
-import { string_to_u8array } from "./utils.js";
+// import { string_to_u8array } from "./utils.js";
 
 let voronoi = await Voronoi();
-let pts = [];
+// let pts = [];
 let canvas = document.createElement("canvas");
 document.body.appendChild(canvas);
 
@@ -17,9 +17,7 @@ function init() {
   const coords = new Float32Array(numPoints * 2);
   for (let i = 0; i < coords.length; i++) {
     coords[i] = Math.random() * 256;
-    // coords[i] = i;
   }
-  console.log(coords);
 
   // Allocate memory in WASM heap
   const bytes = coords.length * coords.BYTES_PER_ELEMENT;
@@ -33,15 +31,24 @@ function init() {
 
   // Read fields using getValue
   const numVertices = voronoi.getValue(diagram, "i64"); // offset +0
-  const vertices = voronoi.getValue(diagram + 8, "*"); // offset +8
-  const numEdges = voronoi.getValue(diagram + 16, "i64"); // offset +24
-  const edgesPtr = voronoi.getValue(diagram + 24, "*"); // offset +16
+  const numEdges = voronoi.getValue(diagram + 4, "i64"); // offset +24
+  const numCells = voronoi.getValue(diagram + 8, "i64"); // offset +24
+
+  const vertices = voronoi.getValue(diagram + 12, "*");
+  for (let i = 0; i < numVertices; i++) {
+    const x = voronoi.getValue(vertices + (i * 2 + 0) * 2).toFixed(2);
+    const y = voronoi.getValue(vertices + (i * 2 + 1) * 2).toFixed(2);
+    console.log(x, y);
+  }
+  // const verticesPtr = voronoi.getValue(diagram + 24, "*"); // offset +8
+  // const edgesPtr = voronoi.getValue(diagram + 32, "*"); // offset +16
   // const cellsPtr = voronoi.getValue(diagram + 32, "*"); // offset +32
   // const numCells = voronoi.getValue(diagram + 40, "i64"); // offset +40
 
   console.log("numVertices : ", numVertices);
-  console.log("vertices : ", vertices);
   console.log("numEdges : ", numEdges);
+  console.log("numCells : ", numCells);
+  // console.log("vertices : ", verticesPtr);
   // console.log("numCells : ", numCells);
 
   console.log(voronoi);

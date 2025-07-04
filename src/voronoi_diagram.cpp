@@ -17,9 +17,10 @@ Diagram *build_diagram(float *points, size_t len) {
   std::vector<point_data<double>> vertices;
 
   for (size_t i = 0; i + 1 < len; i += 2) {
-    vertices.push_back({(double)points[i], (double)points[i + 1]});
+    vertices.push_back({points[i], points[i + 1]});
 
-    std::cout << "vertex: " << points[i] << ", " << points[i + 1] << std::endl;
+    // std::cout << "vertex: " << points[i] << ", " << points[i + 1] <<
+    // std::endl;
   }
 
   voronoi_diagram<double> vd;
@@ -49,16 +50,28 @@ Diagram *build_diagram(float *points, size_t len) {
     my_vertex.x = vertices[i].x();
     my_vertex.y = vertices[i].y();
     diagram->vertices[i] = my_vertex;
+
+    // std::cout << diagram->vertices[i].x << ", " << diagram->vertices[i].y
+    //           << std::endl;
   }
 
-  // diagram.num_cells = vd.num_cells();
-  // diagram.vertices = vd.vertices();
-  // diagram.num_vertices = vd.num_vertices();
-  // diagram.edges = vd.edges();
-  // diagram.num_edges = vd.num_edges();
+  for (size_t i = 0; i < vd.num_edges(); i++) {
+    Edge my_edge;
+    const auto &vtx0 = vd.edges()[i].vertex0();
+    const auto &vtx1 = vd.edges()[i].vertex1();
+    my_edge.vertex0.x = vtx0->x();
+    my_edge.vertex0.y = vtx0->y();
 
-  std::cout << "returning diagram to JS" << std::endl;
+    my_edge.vertex1.x = vtx1->x();
+    my_edge.vertex1.y = vtx1->y();
+
+    diagram->edges[i] = my_edge;
+  }
+
+  // std::cout << "returning diagram to JS" << std::endl;
   std::cout << "num vertices (cpp): " << diagram->num_vertices << std::endl;
+  std::cout << "num edges (cpp): " << diagram->num_edges << std::endl;
+  std::cout << "num cells (cpp): " << diagram->num_cells << std::endl;
   return diagram;
 }
 }
