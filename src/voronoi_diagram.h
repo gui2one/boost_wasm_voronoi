@@ -35,12 +35,12 @@ public:
   ~Diagram() { std::cout << "Diagram Destructor Called !!!" << std::endl; };
 
 public:
-  Cell *cells;
-  size_t num_cells;
-  Vertex *vertices;
   size_t num_vertices;
-  Edge *edges;
+  Vertex *vertices;
+  size_t num_cells;
+  Cell *cells;
   size_t num_edges;
+  Edge *edges;
 };
 
 extern "C" {

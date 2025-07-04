@@ -13,7 +13,7 @@ let ctx = canvas.getContext("2d");
 canvas.width = 512;
 canvas.height = 512;
 function init() {
-  const numPoints = 200;
+  const numPoints = 10;
   const coords = new Float32Array(numPoints * 2);
   for (let i = 0; i < coords.length; i++) {
     coords[i] = Math.random() * 256;
@@ -24,22 +24,25 @@ function init() {
   const ptr = voronoi._malloc(bytes);
 
   // Copy JS data to WASM heap
-  voronoi.HEAPF32.set(coords, ptr / 2);
+  voronoi.HEAPF32.set(coords, ptr / 4);
 
   // Call the raw binding
   const diagram = voronoi._build_diagram(ptr, coords.length);
 
   // Read fields using getValue
-  const verticesPtr = voronoi.getValue(ptr, "*"); // offset +0
-  const numVertices = voronoi.getValue(ptr + 4, "i32"); // offset +4
-  const edgesPtr = voronoi.getValue(ptr + 8, "*"); // offset +8
-  const numEdges = voronoi.getValue(ptr + 12, "i32"); // offset +12
-  const cellsPtr = voronoi.getValue(ptr + 16, "*"); // offset +16
-  const numCells = voronoi.getValue(ptr + 20, "i32"); // offset +20
+  const numVertices = voronoi.getValue(diagram, "i64"); // offset +0
+  const vertices = voronoi.getValue(diagram + 8, "*"); // offset +8
+  const numEdges = voronoi.getValue(diagram + 16, "i64"); // offset +24
+  const edgesPtr = voronoi.getValue(diagram + 24, "*"); // offset +16
+  // const cellsPtr = voronoi.getValue(diagram + 32, "*"); // offset +32
+  // const numCells = voronoi.getValue(diagram + 40, "i64"); // offset +40
 
   console.log("numVertices : ", numVertices);
+  console.log("vertices : ", vertices);
   console.log("numEdges : ", numEdges);
-  console.log("numCells : ", numCells);
+  // console.log("numCells : ", numCells);
+
+  console.log(voronoi);
 
   // Free memory
   voronoi._free(ptr);
