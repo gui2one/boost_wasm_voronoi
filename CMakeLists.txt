@@ -40,25 +40,22 @@ set(CMAKE_CXX_FLAGS "-O3")
 
 target_compile_options(
     ${PROJECT_NAME} PUBLIC
-    "-sSHARED_MEMORY=1" 
+    "-sSHARED_MEMORY=0" 
 )
     
 target_link_options(
     ${PROJECT_NAME} PUBLIC
     "-sWASM=1"
-    "-lembind"
+    # "-lembind"
     "-sEXPORT_ES6=1"
     "-sMODULARIZE=1"
     "-sEXPORT_NAME=Voronoi"
     "-sALLOW_MEMORY_GROWTH=1"
     "-sASSERTIONS=2"
     "-sENVIRONMENT=web"
-    "-sINITIAL_MEMORY=32MB"
-    # "-sEXPORTED_FUNCTIONS=_malloc,_free"
+    "-sINITIAL_MEMORY=64MB"
+    "-sEXPORTED_FUNCTIONS=_malloc,_free, _build_diagram"
 )
 
-
-# add_compile_options("SHELL:-s USE_PTHREADS -pthread")
-# add_link_options("SHELL:-s USE_PTHREADS -pthread")
 
 endif()

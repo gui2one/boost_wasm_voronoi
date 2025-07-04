@@ -31,15 +31,15 @@ struct Cell {
 
 class Diagram {
 public:
-  // Diagram() = default;
-  // ~Diagram() {
+  Diagram() { std::cout << "Diagram Constructor Called !!!" << std::endl; };
+  ~Diagram() {
 
-  //   cells.clear();
-  //   vertices.clear();
-  //   edges.clear();
+    cells.clear();
+    vertices.clear();
+    edges.clear();
 
-  //   std::cout << "Diagram Destructor Called !!!" << std::endl;
-  // };
+    std::cout << "Diagram Destructor Called !!!" << std::endl;
+  };
 
 public:
   std::vector<Cell> cells;
@@ -47,26 +47,13 @@ public:
   std::vector<Edge> edges;
 };
 
-EMSCRIPTEN_KEEPALIVE
+extern "C" {
+
 void print_hello(const char *name);
 
-EMSCRIPTEN_KEEPALIVE
-Diagram build_diagram(emscripten::val points);
-
-#ifdef __EMSCRIPTEN__
-template <typename T> std::vector<T> to_vector(emscripten::val array) {
-  size_t size = array["length"].as<size_t>();
-  std::vector<T> result(size);
-  emscripten::val memoryView{
-      emscripten::typed_memory_view(size, result.data())};
-  memoryView.call<void>("set", array);
-  return result;
+Diagram build_diagram(double *ptr, size_t length);
 }
-void print_hello_wrapper(emscripten::val name);
 
-std::shared_ptr<Diagram> build_diagram_wrapper(emscripten::val points);
-
-#endif
 } // namespace gui2one
 
 #endif
