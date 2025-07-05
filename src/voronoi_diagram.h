@@ -28,14 +28,11 @@ struct Edge {
 };
 struct Cell {
   size_t source_index;
+  size_t num_vertices;
+  Vertex *vertices;
 };
 
-class Diagram {
-public:
-  Diagram() { std::cout << "Diagram Constructor Called !!!" << std::endl; };
-  ~Diagram() { std::cout << "Diagram Destructor Called !!!" << std::endl; };
-
-public:
+struct Diagram {
   size_t num_vertices;
   size_t num_edges;
   size_t num_cells;
@@ -45,8 +42,6 @@ public:
 };
 
 extern "C" {
-
-void print_hello(const char *name);
 
 Diagram *build_diagram(float *points, size_t length);
 }

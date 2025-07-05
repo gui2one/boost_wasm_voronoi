@@ -90,11 +90,6 @@ void clip_infinite_edge(const voronoi_edge<double> &edge,
 }
 
 EMSCRIPTEN_KEEPALIVE
-void print_hello(const char *name) {
-  std::cout << "Hello, " << name << "! from c++" << std::endl;
-}
-
-EMSCRIPTEN_KEEPALIVE
 Diagram *build_diagram(float *points, size_t len) {
   std::vector<point_data<double>> vertices;
 
@@ -119,22 +114,49 @@ Diagram *build_diagram(float *points, size_t len) {
   diagram->num_edges = vd.num_edges();
   diagram->edges = new Edge[vd.num_edges()];
 
+  rect_type brect_2 =
+      boost::polygon::construct<rect_type>(-100, -100, 1000 + 100, 1000 + 100);
   for (size_t i = 0; i < vd.num_cells(); i++) {
+    const auto &cell = vd.cells()[i];
     Cell my_cell;
-    // std::cout << "source index : " << vd.cells()[i].source_index() <<
-    // std::endl;
-    my_cell.source_index = vd.cells()[i].source_index();
+    std::vector<Vertex> vertices_vector;
+
+    const auto *edge = cell.incident_edge();
+    const auto *start = edge;
+
+    do {
+      if (edge->is_infinite()) {
+        std::vector<point_data<double>> clipped_edge;
+        clip_infinite_edge(*edge, clipped_edge, brect_2, vertices);
+        // Add both endpoints of clipped infinite edge
+        for (const auto &pt : clipped_edge) {
+          vertices_vector.push_back({pt.x(), pt.y()});
+        }
+      } else {
+        if (edge->vertex0()) {
+          vertices_vector.push_back(
+              {edge->vertex0()->x(), edge->vertex0()->y()});
+        }
+        // You can also choose to add edge->vertex1() for completeness
+      }
+
+      edge = edge->next();
+    } while (edge != start);
+
+    my_cell.source_index = cell.source_index();
+    my_cell.num_vertices = vertices_vector.size();
+    my_cell.vertices = new Vertex[vertices_vector.size()];
+    for (size_t j = 0; j < vertices_vector.size(); j++) {
+      my_cell.vertices[j] = vertices_vector[j];
+    }
+
     diagram->cells[i] = my_cell;
   }
-
   for (size_t i = 0; i < diagram->num_vertices; i++) {
     Vertex my_vertex;
     my_vertex.x = vd.vertices()[i].x();
     my_vertex.y = vd.vertices()[i].y();
     diagram->vertices[i] = my_vertex;
-
-    // std::cout << diagram->vertices[i].x << ", " << diagram->vertices[i].y
-    //           << std::endl;
   }
 
   rect_type brect_ = boost::polygon::construct<rect_type>(-100, -100, 612, 612);
@@ -150,7 +172,7 @@ Diagram *build_diagram(float *points, size_t len) {
       my_edge.vertex0.y = clipped_edge[0].y();
       my_edge.vertex1.x = clipped_edge[1].x();
       my_edge.vertex1.y = clipped_edge[1].y();
-      // continue;
+
     } else {
 
       const auto &vtx0 = vd.edges()[i].vertex0();
@@ -168,7 +190,6 @@ Diagram *build_diagram(float *points, size_t len) {
     diagram->edges[i] = my_edge;
   }
 
-  // std::cout << "returning diagram to JS" << std::endl;
   std::cout << "num vertices (cpp): " << diagram->num_vertices << std::endl;
   std::cout << "num edges (cpp): " << diagram->num_edges << std::endl;
   std::cout << "num cells (cpp): " << diagram->num_cells << std::endl;

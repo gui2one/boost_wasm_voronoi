@@ -1,0 +1,15 @@
+{
+    "name": "boost-voronoi-wasm-module",
+    "version": "1.0.0",
+    "main": "js/main.js",
+    "type": "module",
+    "files": [
+        "js/main.js",
+        "build_wasm/*.wasm",
+        "build_wasm/*.js"
+    ],
+    "description": "Private WASM wrapper for Node.js",
+    "keywords": [],
+    "author": "gui2one",
+    "license": "MIT"
+}

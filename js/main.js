@@ -5,9 +5,9 @@ import Voronoi from "./boost_voronoi.js";
 
 let voronoi = await Voronoi();
 
-const HEAPU32 = voronoi.HEAPU32; // for size_t and pointers (4 bytes)
-const HEAPF64 = voronoi.HEAPF64; // for double (8 bytes)
-const HEAPU8 = voronoi.HEAPU8; // for byte-wise work (if needed)
+// const HEAPU32 = voronoi.HEAPU32; // for size_t and pointers (4 bytes)
+// const HEAPF64 = voronoi.HEAPF64; // for double (8 bytes)
+// const HEAPU8 = voronoi.HEAPU8; // for byte-wise work (if needed)
 // let pts = [];
 let ctx;
 let canvas = document.createElement("canvas");
@@ -41,9 +41,11 @@ function init() {
   ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  display_coords(coords);
-  display_vertices(data.vertices);
-  display_edges(data.edges);
+  console.log(data);
+  // display_coords(coords);
+  // display_vertices(data.vertices);
+  // display_edges(data.edges);
+  display_cells(data.cells);
 }
 
 function display_coords(coords) {
@@ -74,39 +76,87 @@ function display_edges(edges) {
   ctx.stroke();
 }
 
+function display_cells(cells) {
+  for (let cell of cells) {
+    ctx.beginPath();
+    ctx.moveTo(cell.vertices[0].x, cell.vertices[0].y);
+    for (let vtx of cell.vertices) {
+      ctx.lineTo(vtx.x, vtx.y);
+    }
+
+    ctx.closePath();
+    ctx.stroke();
+  }
+}
+
 function getMeshData(meshPtr) {
-  const num_vertices = HEAPU32[meshPtr >> 2];
-  const num_edges = HEAPU32[(meshPtr >> 2) + 1];
-  const num_cells = HEAPU32[(meshPtr >> 2) + 2];
+  const HEAPU32 = voronoi.HEAPU32;
+  const HEAPF64 = voronoi.HEAPF64;
 
-  const verticesPtr = HEAPU32[(meshPtr >> 2) + 3];
-  const edgesPtr = HEAPU32[(meshPtr >> 2) + 4];
-  const cellsPtr = HEAPU32[(meshPtr >> 2) + 5];
+  const baseU32 = meshPtr >> 2;
 
+  const num_vertices = HEAPU32[baseU32 + 0];
+  const num_edges = HEAPU32[baseU32 + 1];
+  const num_cells = HEAPU32[baseU32 + 2];
+
+  const verticesPtr = HEAPU32[baseU32 + 3];
+  const edgesPtr = HEAPU32[baseU32 + 4];
+  const cellsPtr = HEAPU32[baseU32 + 5];
+
+  // Read top-level vertices
   const vertices = [];
-  for (let i = 0; i < num_vertices; i++) {
-    const base = (verticesPtr >> 3) + i * 2; // double-aligned
-    const x = HEAPF64[base];
-    const y = HEAPF64[base + 1];
-    vertices.push({ x, y });
+  const vertexBase = verticesPtr >> 3;
+  for (let i = 0; i < num_vertices; ++i) {
+    const base = vertexBase + i * 2;
+    vertices.push({
+      x: HEAPF64[base],
+      y: HEAPF64[base + 1],
+    });
   }
 
+  // Read edges
   const edges = [];
-  for (let i = 0; i < num_edges; i++) {
-    const base = (edgesPtr >> 3) + i * 4; // 4 doubles = 32 bytes
-    const vertex0 = { x: HEAPF64[base], y: HEAPF64[base + 1] };
-    const vertex1 = { x: HEAPF64[base + 2], y: HEAPF64[base + 3] };
-    edges.push({ vertex0, vertex1 });
+  const edgeSizeInDoubles = 4; // 2 Vertex structs, each with x and y (2 doubles)
+  const edgeBase = edgesPtr >> 3;
+  for (let i = 0; i < num_edges; ++i) {
+    const base = edgeBase + i * edgeSizeInDoubles;
+    edges.push({
+      vertex0: { x: HEAPF64[base], y: HEAPF64[base + 1] },
+      vertex1: { x: HEAPF64[base + 2], y: HEAPF64[base + 3] },
+    });
   }
 
+  // Read cells
   const cells = [];
-  for (let i = 0; i < num_cells; i++) {
-    const index = (cellsPtr >> 2) + i;
-    const source_index = HEAPU32[index];
-    cells.push({ source_index });
+  const cellSizeInU32 = 3; // size_t source_index + size_t num_vertices + Vertex* pointer
+  const cellBase = cellsPtr >> 2;
+  for (let i = 0; i < num_cells; ++i) {
+    const offset = cellBase + i * cellSizeInU32;
+    const source_index = HEAPU32[offset];
+    const num_cell_vertices = HEAPU32[offset + 1];
+    const cellVerticesPtr = HEAPU32[offset + 2];
+
+    const verts = [];
+    const vertexPtr64 = cellVerticesPtr >> 3;
+    for (let j = 0; j < num_cell_vertices; ++j) {
+      const base = vertexPtr64 + j * 2;
+      verts.push({
+        x: HEAPF64[base],
+        y: HEAPF64[base + 1],
+      });
+    }
+
+    cells.push({
+      source_index,
+      vertices: verts,
+    });
   }
 
-  return { num_vertices, num_edges, num_cells, vertices, edges, cells };
+  return {
+    vertices,
+    edges,
+    cells,
+  };
 }
 
 init();
