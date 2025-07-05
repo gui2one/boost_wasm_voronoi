@@ -16,10 +16,10 @@ document.body.appendChild(canvas);
 canvas.width = 512;
 canvas.height = 512;
 function init() {
-  const numPoints = 50;
+  const numPoints = 500;
   const coords = new Float32Array(numPoints * 2);
   for (let i = 0; i < coords.length; i++) {
-    coords[i] = Math.random() * 256;
+    coords[i] = Math.random() * 512;
   }
 
   // Allocate memory in WASM heap

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 
+#include <boost/polygon/polygon.hpp>
 #include <boost/polygon/voronoi.hpp>
 
 #ifdef __EMSCRIPTEN__
