@@ -1,21 +1,10 @@
 // @ts-nocheck
 import Voronoi from "./boost_voronoi.js";
 
-// import { string_to_u8array } from "./utils.js";
-
 let voronoi = await Voronoi();
 
-// const HEAPU32 = voronoi.HEAPU32; // for size_t and pointers (4 bytes)
-// const HEAPF64 = voronoi.HEAPF64; // for double (8 bytes)
-// const HEAPU8 = voronoi.HEAPU8; // for byte-wise work (if needed)
-// let pts = [];
-let ctx;
-let canvas = document.createElement("canvas");
-document.body.appendChild(canvas);
-
-canvas.width = 512;
-canvas.height = 512;
-function init() {
+export function BuildDiagram(canvas) {
+  let ctx = canvas.getContext("2d");
   const numPoints = 500;
   const coords = new Float32Array(numPoints * 2);
   for (let i = 0; i < coords.length; i++) {
@@ -38,17 +27,16 @@ function init() {
   // Free memory
   voronoi._free(ptr);
 
-  ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   console.log(data);
   // display_coords(coords);
   // display_vertices(data.vertices);
   // display_edges(data.edges);
-  display_cells(data.cells);
+  display_cells(data.cells, ctx);
 }
 
-function display_coords(coords) {
+function display_coords(coords, ctx) {
   // ctx?.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = "red";
   for (let i = 0; i < coords.length; i += 2) {
@@ -57,7 +45,7 @@ function display_coords(coords) {
   }
 }
 
-function display_vertices(vertices) {
+function display_vertices(vertices, ctx) {
   ctx.fillStyle = "green";
   for (let i = 0; i < vertices.length; i++) {
     // console.log(coords[i], coords[i + 1]);
@@ -65,7 +53,7 @@ function display_vertices(vertices) {
   }
 }
 
-function display_edges(edges) {
+function display_edges(edges, ctx) {
   ctx.fillStyle = "blue";
   ctx.beginPath();
   for (let i = 0; i < edges.length; i++) {
@@ -76,7 +64,7 @@ function display_edges(edges) {
   ctx.stroke();
 }
 
-function display_cells(cells) {
+function display_cells(cells, ctx) {
   for (let cell of cells) {
     ctx.beginPath();
     ctx.moveTo(cell.vertices[0].x, cell.vertices[0].y);
@@ -159,9 +147,9 @@ function getMeshData(meshPtr) {
   };
 }
 
-init();
+// init();
 
-document.addEventListener("click", () => {
-  console.clear();
-  init();
-});
+// document.addEventListener("click", () => {
+//   console.clear();
+//   init();
+// });
