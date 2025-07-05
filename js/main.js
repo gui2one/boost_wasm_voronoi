@@ -1,5 +1,5 @@
 // @ts-nocheck
-import Voronoi from "./boost_voronoi.js";
+import Voronoi from "./build_wasm/boost_voronoi.js";
 
 let voronoi = await Voronoi();
 
