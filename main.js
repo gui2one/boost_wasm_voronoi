@@ -1,14 +1,19 @@
 // @ts-nocheck
-import Voronoi from "../build_wasm/boost_voronoi.js";
+import Voronoi from "./build_wasm/boost_voronoi.js";
 
 let voronoi = await Voronoi();
 
-export function BuildDiagram(canvas) {
+export function BuildDiagram(canvas, _coords) {
   let ctx = canvas.getContext("2d");
-  const numPoints = 500;
-  const coords = new Float32Array(numPoints * 2);
-  for (let i = 0; i < coords.length; i++) {
-    coords[i] = Math.random() * 512;
+  let coords;
+  if (_coords === undefined) {
+    const numPoints = 500;
+    coords = new Float32Array(numPoints * 2);
+    for (let i = 0; i < coords.length; i++) {
+      coords[i] = Math.random() * 512;
+    }
+  } else {
+    coords = new Float32Array(_coords);
   }
 
   // Allocate memory in WASM heap

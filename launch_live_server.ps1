@@ -1,1 +1,1 @@
-npx live-server --port=3000 ./httpdocs
+npx live-server --port=3000 .
