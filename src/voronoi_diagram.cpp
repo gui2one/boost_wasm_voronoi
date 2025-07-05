@@ -45,10 +45,10 @@ Diagram *build_diagram(float *points, size_t len) {
     diagram->cells[i] = my_cell;
   }
 
-  for (size_t i = 0; i < vertices.size(); i++) {
+  for (size_t i = 0; i < diagram->num_vertices; i++) {
     Vertex my_vertex;
-    my_vertex.x = vertices[i].x();
-    my_vertex.y = vertices[i].y();
+    my_vertex.x = vd.vertices()[i].x();
+    my_vertex.y = vd.vertices()[i].y();
     diagram->vertices[i] = my_vertex;
 
     // std::cout << diagram->vertices[i].x << ", " << diagram->vertices[i].y

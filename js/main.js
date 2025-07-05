@@ -13,7 +13,7 @@ let ctx = canvas.getContext("2d");
 canvas.width = 512;
 canvas.height = 512;
 function init() {
-  const numPoints = 10;
+  const numPoints = 50;
   const coords = new Float32Array(numPoints * 2);
   for (let i = 0; i < coords.length; i++) {
     coords[i] = Math.random() * 256;
@@ -34,27 +34,32 @@ function init() {
   const numEdges = voronoi.getValue(diagram + 4, "i64"); // offset +24
   const numCells = voronoi.getValue(diagram + 8, "i64"); // offset +24
 
-  const vertices = voronoi.getValue(diagram + 12, "*");
+  const verticesPtr = voronoi.getValue(diagram + 12, "*");
+
   for (let i = 0; i < numVertices; i++) {
-    const x = voronoi.getValue(vertices + (i * 2 + 0) * 2).toFixed(2);
-    const y = voronoi.getValue(vertices + (i * 2 + 1) * 2).toFixed(2);
-    console.log(x, y);
+    const base = verticesPtr / 8 + i * 2; // double = 8 bytes
+    const x = voronoi.HEAPF64[base];
+    const y = voronoi.HEAPF64[base + 1];
+    console.log(`Vertex ${i}: ${x}, ${y}`);
   }
-  // const verticesPtr = voronoi.getValue(diagram + 24, "*"); // offset +8
-  // const edgesPtr = voronoi.getValue(diagram + 32, "*"); // offset +16
-  // const cellsPtr = voronoi.getValue(diagram + 32, "*"); // offset +32
-  // const numCells = voronoi.getValue(diagram + 40, "i64"); // offset +40
 
   console.log("numVertices : ", numVertices);
   console.log("numEdges : ", numEdges);
   console.log("numCells : ", numCells);
-  // console.log("vertices : ", verticesPtr);
-  // console.log("numCells : ", numCells);
 
   console.log(voronoi);
 
   // Free memory
   voronoi._free(ptr);
+
+  display_coords(coords);
+}
+
+function display_coords(coords) {
+  for (let i = 0; i < coords.length; i += 2) {
+    console.log(coords[i], coords[i + 1]);
+    ctx?.fillRect(coords[i], coords[i + 1], 1, 1);
+  }
 }
 
 init();
