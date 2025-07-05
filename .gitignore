@@ -1,6 +1,6 @@
 build/
-build_wasm/
-httpdocs/
-
+build_wasm/*
 !build_wasm/boost_voronoi.js
 !build_wasm/boost_voronoi.wasm
+httpdocs/
+
