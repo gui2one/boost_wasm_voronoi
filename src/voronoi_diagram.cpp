@@ -65,6 +65,8 @@ Diagram *build_diagram(float *points, size_t len) {
     my_edge.vertex1.x = vtx1->x();
     my_edge.vertex1.y = vtx1->y();
 
+    // std::cout << "vtx0: " << my_edge.vertex0.x << ", " << my_edge.vertex0.y
+    //           << std::endl;
     diagram->edges[i] = my_edge;
   }
 
