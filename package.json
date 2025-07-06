@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "main": "dist/main.js",
     "type": "module",
-    "types": "dist/build_wasm/boost_voronoi.d.ts",
+    "types": "dist/main.d.ts",
     "files": [
         "dist/**/*"
     ],
