@@ -19,6 +19,10 @@ function init() {
   }
   let diagram = BuildDiagram(coords);
   console.log(diagram);
+  if (ctx === null) {
+    console.error("Rendering context is null");
+    return;
+  }
   ctx?.clearRect(0, 0, canvas.width, canvas.height);
   display_cells(diagram.cells, ctx);
 }

@@ -3,6 +3,13 @@ import Voronoi from "./build_wasm/boost_voronoi.js";
 
 let voronoi = await Voronoi();
 
+/**
+ * Description placeholder
+ *
+ * @export
+ * @param {number[]} _coords
+ * @returns {{ vertices: []; edges: []; cells: []; }}
+ */
 export function BuildDiagram(_coords) {
   let coords;
   if (_coords === undefined) {
@@ -32,6 +39,12 @@ export function BuildDiagram(_coords) {
   return data;
 }
 
+/**
+ * Description placeholder
+ *
+ * @param {number[]} coords
+ * @param {RenderingContext} ctx
+ */
 function display_coords(coords, ctx) {
   // ctx?.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = "red";
@@ -41,6 +54,11 @@ function display_coords(coords, ctx) {
   }
 }
 
+/**
+ *
+ * @param {Array} vertices
+ * @param {RenderingContext} ctx
+ */
 export function display_vertices(vertices, ctx) {
   ctx.fillStyle = "green";
   for (let i = 0; i < vertices.length; i++) {
@@ -49,6 +67,11 @@ export function display_vertices(vertices, ctx) {
   }
 }
 
+/**
+ *
+ * @param {Array} edges
+ * @param {RenderingContext} ctx
+ */
 export function display_edges(edges, ctx) {
   ctx.fillStyle = "blue";
   ctx.beginPath();
@@ -60,6 +83,11 @@ export function display_edges(edges, ctx) {
   ctx.stroke();
 }
 
+/**
+ *
+ * @param {Array} cells
+ * @param {RenderingContext} ctx
+ */
 export function display_cells(cells, ctx) {
   for (let cell of cells) {
     let color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
