@@ -18,19 +18,19 @@ export type Cell = {
 export declare function BuildDiagram(_coords: number[]): BoostDiagram;
 /**
  *
- * @param {Array} vertices
+ * @param {Vertex[]} vertices
  * @param {RenderingContext} ctx
  */
-export declare function display_vertices(vertices: any, ctx: any): void;
+export declare function display_vertices(vertices: Vertex[], ctx: CanvasRenderingContext2D): void;
 /**
  *
- * @param {Array} edges
+ * @param {Edge[]} edges
  * @param {RenderingContext} ctx
  */
-export declare function display_edges(edges: any, ctx: any): void;
+export declare function display_edges(edges: Edge[], ctx: CanvasRenderingContext2D): void;
 /**
  *
- * @param {Array} cells
- * @param {RenderingContext} ctx
+ * @param {Cell[]} cells
+ * @param {CanvasRenderingContext2D} ctx
  */
-export declare function display_cells(cells: any, ctx: any): void;
+export declare function display_cells(cells: Cell[], ctx: CanvasRenderingContext2D): void;

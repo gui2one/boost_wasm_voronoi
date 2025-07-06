@@ -1,15 +1,28 @@
-// @ts-nocheck
 import Voronoi from "./build_wasm/boost_voronoi.js";
 
 let voronoi = await Voronoi();
 
-/**
- *
- * @export
- * @param {number[]} _coords
- * @returns {{ vertices: []; edges: []; cells: []; }}
- */
-export function BuildDiagram(_coords) {
+export type BoostDiagram = {
+  vertices: Vertex[];
+  edges: Edge[];
+  cells: Cell[];
+};
+
+export type Vertex = {
+  x: number;
+  y: number;
+};
+
+export type Edge = {
+  vertex0: Vertex;
+  vertex1: Vertex;
+};
+
+export type Cell = {
+  source_index: number;
+  vertices: Vertex[];
+};
+export function BuildDiagram(_coords: number[]): BoostDiagram {
   let coords;
   if (_coords === undefined) {
     const numPoints = 500;
@@ -44,7 +57,7 @@ export function BuildDiagram(_coords) {
  * @param {number[]} coords
  * @param {RenderingContext} ctx
  */
-function display_coords(coords, ctx) {
+function display_coords(coords: number[], ctx: CanvasRenderingContext2D) {
   // ctx?.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = "red";
   for (let i = 0; i < coords.length; i += 2) {
@@ -55,10 +68,13 @@ function display_coords(coords, ctx) {
 
 /**
  *
- * @param {Array} vertices
+ * @param {Vertex[]} vertices
  * @param {RenderingContext} ctx
  */
-export function display_vertices(vertices, ctx) {
+export function display_vertices(
+  vertices: Vertex[],
+  ctx: CanvasRenderingContext2D
+) {
   ctx.fillStyle = "green";
   for (let i = 0; i < vertices.length; i++) {
     // console.log(coords[i], coords[i + 1]);
@@ -68,10 +84,10 @@ export function display_vertices(vertices, ctx) {
 
 /**
  *
- * @param {Array} edges
+ * @param {Edge[]} edges
  * @param {RenderingContext} ctx
  */
-export function display_edges(edges, ctx) {
+export function display_edges(edges: Edge[], ctx: CanvasRenderingContext2D) {
   ctx.fillStyle = "blue";
   ctx.beginPath();
   for (let i = 0; i < edges.length; i++) {
@@ -84,10 +100,10 @@ export function display_edges(edges, ctx) {
 
 /**
  *
- * @param {Array} cells
- * @param {RenderingContext} ctx
+ * @param {Cell[]} cells
+ * @param {CanvasRenderingContext2D} ctx
  */
-export function display_cells(cells, ctx) {
+export function display_cells(cells: Cell[], ctx: CanvasRenderingContext2D) {
   for (let cell of cells) {
     let color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
 
@@ -104,7 +120,7 @@ export function display_cells(cells, ctx) {
   }
 }
 
-function getMeshData(meshPtr) {
+function getMeshData(meshPtr: number): BoostDiagram {
   const HEAPU32 = voronoi.HEAPU32;
   const HEAPF64 = voronoi.HEAPF64;
 
@@ -119,7 +135,7 @@ function getMeshData(meshPtr) {
   const cellsPtr = HEAPU32[baseU32 + 5];
 
   // Read top-level vertices
-  const vertices = [];
+  const vertices: Vertex[] = [];
   const vertexBase = verticesPtr >> 3;
   for (let i = 0; i < num_vertices; ++i) {
     const base = vertexBase + i * 2;
@@ -130,7 +146,7 @@ function getMeshData(meshPtr) {
   }
 
   // Read edges
-  const edges = [];
+  const edges: Edge[] = [];
   const edgeSizeInDoubles = 4; // 2 Vertex structs, each with x and y (2 doubles)
   const edgeBase = edgesPtr >> 3;
   for (let i = 0; i < num_edges; ++i) {
@@ -142,7 +158,7 @@ function getMeshData(meshPtr) {
   }
 
   // Read cells
-  const cells = [];
+  const cells: Cell[] = [];
   const cellSizeInU32 = 3; // size_t source_index + size_t num_vertices + Vertex* pointer
   const cellBase = cellsPtr >> 2;
   for (let i = 0; i < num_cells; ++i) {
@@ -151,7 +167,7 @@ function getMeshData(meshPtr) {
     const num_cell_vertices = HEAPU32[offset + 1];
     const cellVerticesPtr = HEAPU32[offset + 2];
 
-    const verts = [];
+    const verts: Vertex[] = [];
     const vertexPtr64 = cellVerticesPtr >> 3;
     for (let j = 0; j < num_cell_vertices; ++j) {
       const base = vertexPtr64 + j * 2;

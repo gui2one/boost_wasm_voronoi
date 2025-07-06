@@ -1,1 +1,1 @@
-npx -p typescript tsc main.js --declaration --allowJs --emitDeclarationOnly --outDir types
+npx -p typescript tsc ./build_wasm/boost_voronoi.js --declaration --allowJs --emitDeclarationOnly --outDir build_wasm
