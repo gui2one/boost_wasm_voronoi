@@ -1,10 +1,10 @@
 {
     "name": "boost-voronoi-wasm-module",
     "version": "1.0.0",
-    "main": "js/main.js",
+    "main": "main.js",
     "type": "module",
     "files": [
-        "js/main.js",
+        "main.js",
         "build_wasm/boost_voronoi.wasm",
         "build_wasm/boost_voronoi.js"
     ],
