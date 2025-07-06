@@ -6,7 +6,8 @@
     "files": [
         "main.js",
         "build_wasm/boost_voronoi.wasm",
-        "build_wasm/boost_voronoi.js"
+        "build_wasm/boost_voronoi.js",
+        "types/*"
     ],
     "description": "Private WASM wrapper for Node.js",
     "keywords": [],
