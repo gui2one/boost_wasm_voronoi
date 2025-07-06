@@ -3,8 +3,7 @@ import Voronoi from "./build_wasm/boost_voronoi.js";
 
 let voronoi = await Voronoi();
 
-export function BuildDiagram(canvas, _coords) {
-  let ctx = canvas.getContext("2d");
+export function BuildDiagram(_coords) {
   let coords;
   if (_coords === undefined) {
     const numPoints = 500;
@@ -23,22 +22,14 @@ export function BuildDiagram(canvas, _coords) {
   // Copy JS data to WASM heap
   voronoi.HEAPF32.set(coords, ptr / 4); // divide by coords.BYTES_PER_ELEMENT ?!!
 
-  // Call the raw binding
   const diagram = voronoi._build_diagram(ptr, coords.length);
 
   let data = getMeshData(diagram);
-  // console.log(data);
 
   // Free memory
   voronoi._free(ptr);
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  console.log(data);
-  // display_coords(coords);
-  // display_vertices(data.vertices);
-  // display_edges(data.edges);
-  display_cells(data.cells, ctx);
+  return data;
 }
 
 function display_coords(coords, ctx) {
@@ -50,7 +41,7 @@ function display_coords(coords, ctx) {
   }
 }
 
-function display_vertices(vertices, ctx) {
+export function display_vertices(vertices, ctx) {
   ctx.fillStyle = "green";
   for (let i = 0; i < vertices.length; i++) {
     // console.log(coords[i], coords[i + 1]);
@@ -58,7 +49,7 @@ function display_vertices(vertices, ctx) {
   }
 }
 
-function display_edges(edges, ctx) {
+export function display_edges(edges, ctx) {
   ctx.fillStyle = "blue";
   ctx.beginPath();
   for (let i = 0; i < edges.length; i++) {
@@ -69,8 +60,11 @@ function display_edges(edges, ctx) {
   ctx.stroke();
 }
 
-function display_cells(cells, ctx) {
+export function display_cells(cells, ctx) {
   for (let cell of cells) {
+    let color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+
+    ctx.fillStyle = color;
     ctx.beginPath();
     ctx.moveTo(cell.vertices[0].x, cell.vertices[0].y);
     for (let vtx of cell.vertices) {
@@ -79,6 +73,7 @@ function display_cells(cells, ctx) {
 
     ctx.closePath();
     ctx.stroke();
+    ctx.fill();
   }
 }
 
