@@ -4,7 +4,6 @@ import Voronoi from "./build_wasm/boost_voronoi.js";
 let voronoi = await Voronoi();
 
 /**
- * Description placeholder
  *
  * @export
  * @param {number[]} _coords

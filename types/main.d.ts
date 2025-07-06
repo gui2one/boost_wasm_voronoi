@@ -1,26 +1,29 @@
-export function BuildDiagram(_coords: any): {
-    vertices: {
-        x: any;
-        y: any;
-    }[];
-    edges: {
-        vertex0: {
-            x: any;
-            y: any;
-        };
-        vertex1: {
-            x: any;
-            y: any;
-        };
-    }[];
-    cells: {
-        source_index: any;
-        vertices: {
-            x: any;
-            y: any;
-        }[];
-    }[];
+/**
+ *
+ * @export
+ * @param {number[]} _coords
+ * @returns {{ vertices: []; edges: []; cells: []; }}
+ */
+export function BuildDiagram(_coords: number[]): {
+    vertices: [];
+    edges: [];
+    cells: [];
 };
-export function display_vertices(vertices: any, ctx: any): void;
-export function display_edges(edges: any, ctx: any): void;
-export function display_cells(cells: any, ctx: any): void;
+/**
+ *
+ * @param {Array} vertices
+ * @param {RenderingContext} ctx
+ */
+export function display_vertices(vertices: any[], ctx: RenderingContext): void;
+/**
+ *
+ * @param {Array} edges
+ * @param {RenderingContext} ctx
+ */
+export function display_edges(edges: any[], ctx: RenderingContext): void;
+/**
+ *
+ * @param {Array} cells
+ * @param {RenderingContext} ctx
+ */
+export function display_cells(cells: any[], ctx: RenderingContext): void;
