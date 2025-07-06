@@ -4,4 +4,5 @@ build_wasm/*
 !build_wasm/boost_voronoi.d.ts
 !build_wasm/boost_voronoi.wasm
 httpdocs/
+node_modules/
 

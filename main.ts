@@ -51,12 +51,6 @@ export function BuildDiagram(_coords: number[]): BoostDiagram {
   return data;
 }
 
-/**
- * Description placeholder
- *
- * @param {number[]} coords
- * @param {RenderingContext} ctx
- */
 function display_coords(coords: number[], ctx: CanvasRenderingContext2D) {
   // ctx?.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = "red";
@@ -66,11 +60,6 @@ function display_coords(coords: number[], ctx: CanvasRenderingContext2D) {
   }
 }
 
-/**
- *
- * @param {Vertex[]} vertices
- * @param {RenderingContext} ctx
- */
 export function display_vertices(
   vertices: Vertex[],
   ctx: CanvasRenderingContext2D
@@ -82,11 +71,6 @@ export function display_vertices(
   }
 }
 
-/**
- *
- * @param {Edge[]} edges
- * @param {RenderingContext} ctx
- */
 export function display_edges(edges: Edge[], ctx: CanvasRenderingContext2D) {
   ctx.fillStyle = "blue";
   ctx.beginPath();
@@ -98,11 +82,6 @@ export function display_edges(edges: Edge[], ctx: CanvasRenderingContext2D) {
   ctx.stroke();
 }
 
-/**
- *
- * @param {Cell[]} cells
- * @param {CanvasRenderingContext2D} ctx
- */
 export function display_cells(cells: Cell[], ctx: CanvasRenderingContext2D) {
   for (let cell of cells) {
     let color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;

@@ -8,11 +8,5 @@
     "esModuleInterop": true,
     "strict": true
   },
-  "include": [
-    "main.ts",
-    "types/main.d.ts",
-    "types/build_wasm/boost_voronoi.d.ts",
-    "./build_wasm/boost_voronoi.wasm",
-    "./build_wasm/boost_voronoi.js"
-  ]
+  "include": ["main.ts"]
 }

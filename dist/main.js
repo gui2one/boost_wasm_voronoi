@@ -23,12 +23,6 @@ export function BuildDiagram(_coords) {
     voronoi._free(ptr);
     return data;
 }
-/**
- * Description placeholder
- *
- * @param {number[]} coords
- * @param {RenderingContext} ctx
- */
 function display_coords(coords, ctx) {
     // ctx?.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "red";
@@ -37,11 +31,6 @@ function display_coords(coords, ctx) {
         ctx?.fillRect(coords[i] - 1, coords[i + 1] - 1, 3, 3);
     }
 }
-/**
- *
- * @param {Vertex[]} vertices
- * @param {RenderingContext} ctx
- */
 export function display_vertices(vertices, ctx) {
     ctx.fillStyle = "green";
     for (let i = 0; i < vertices.length; i++) {
@@ -49,11 +38,6 @@ export function display_vertices(vertices, ctx) {
         ctx?.fillRect(vertices[i].x - 1, vertices[i].y - 1, 3, 3);
     }
 }
-/**
- *
- * @param {Edge[]} edges
- * @param {RenderingContext} ctx
- */
 export function display_edges(edges, ctx) {
     ctx.fillStyle = "blue";
     ctx.beginPath();
@@ -64,11 +48,6 @@ export function display_edges(edges, ctx) {
     ctx.closePath();
     ctx.stroke();
 }
-/**
- *
- * @param {Cell[]} cells
- * @param {CanvasRenderingContext2D} ctx
- */
 export function display_cells(cells, ctx) {
     for (let cell of cells) {
         let color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;

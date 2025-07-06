@@ -5,14 +5,16 @@
     "type": "module",
     "types": "types/main.d.ts",
     "files": [
-        "dist/main.js",
-        "dist/main.d.ts",
-        "build_wasm/boost_voronoi.wasm",
-        "build_wasm/boost_voronoi.js",
-        "types/*"
+        "dist/**/*"
     ],
     "description": "Private WASM wrapper for Node.js",
     "keywords": [],
     "author": "gui2one",
-    "license": "MIT"
+    "license": "MIT",
+    "devDependencies": {
+        "tsc": "^2.0.4"
+    },
+    "scripts": {
+        "copy_files": "cp build_wasm/boost_voronoi.wasm ./dist/build_wasm/boost_voronoi.wasm && cp build_wasm/boost_voronoi.js ./dist/build_wasm/boost_voronoi.js"
+    }
 }
