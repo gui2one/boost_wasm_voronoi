@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "main": "main.js",
     "type": "module",
+    "types": "types/main.d.ts",
     "files": [
         "main.js",
         "build_wasm/boost_voronoi.wasm",
