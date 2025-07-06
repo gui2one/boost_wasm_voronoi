@@ -6,20 +6,21 @@ let canvas = document.createElement("canvas");
 
 canvas.width = 512;
 canvas.height = 512;
+let ctx = canvas.getContext("2d");
 document.body.appendChild(canvas);
 
 function init() {
   let coords = [];
-  for (let i = 0; i < 30; i++) {
-    for (let j = 0; j < 30; j++) {
+  for (let i = 0; i < 15; i++) {
+    for (let j = 0; j < 15; j++) {
       coords.push(i * 20 + Math.random() * 5);
       coords.push(j * 20 + Math.random() * 5);
     }
   }
   let diagram = BuildDiagram(coords);
   console.log(diagram);
-
-  display_cells(diagram.cells, canvas.getContext("2d"));
+  ctx?.clearRect(0, 0, canvas.width, canvas.height);
+  display_cells(diagram.cells, ctx);
 }
 init();
 
