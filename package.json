@@ -12,9 +12,11 @@
     "author": "gui2one",
     "license": "MIT",
     "devDependencies": {
-        "tsc": "^2.0.4"
+        "tsc": "^2.0.4",
+        "typescript": "^5.8.3"
     },
     "scripts": {
+        "build": "tsc && npm run copy_files",
         "copy_files": "cp build_wasm/boost_voronoi.wasm ./dist/build_wasm/boost_voronoi.wasm && cp build_wasm/boost_voronoi.js ./dist/build_wasm/boost_voronoi.js && cp build_wasm/boost_voronoi.d.ts ./dist/build_wasm/boost_voronoi.d.ts && cp index.html ./dist/index.html && cp js/test_module.js ./dist/js/test_module.js"
     }
 }

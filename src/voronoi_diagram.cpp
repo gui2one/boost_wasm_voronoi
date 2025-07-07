@@ -125,6 +125,8 @@ Diagram *build_diagram(float *points, size_t len) {
     const auto *start = edge;
 
     do {
+
+      edge = edge->next();
       if (edge->is_infinite()) {
         std::vector<point_data<double>> clipped_edge;
         clip_infinite_edge(*edge, clipped_edge, brect_2, vertices);
@@ -140,7 +142,6 @@ Diagram *build_diagram(float *points, size_t len) {
         // You can also choose to add edge->vertex1() for completeness
       }
 
-      edge = edge->next();
     } while (edge != start);
 
     my_cell.source_index = cell.source_index();
