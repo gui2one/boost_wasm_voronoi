@@ -29,7 +29,7 @@ retrieve_point(const voronoi_cell<double> &cell,
   if (category == boost::polygon::SOURCE_CATEGORY_SINGLE_POINT) {
     return point_data_[index];
   }
-  index -= point_data_.size();
+  // index -= point_data_.size();
   return point_data_[index];
   // if (category == boost::polygon::SOURCE_CATEGORY_SEGMENT_START_POINT) {
   //   return low(segment_data_[index]);
@@ -115,8 +115,9 @@ Diagram *build_diagram(float *points, size_t len) {
   diagram->edges = new Edge[vd.num_edges()];
 
   rect_type brect_2 =
-      boost::polygon::construct<rect_type>(-100, -100, 1000 + 100, 1000 + 100);
+      boost::polygon::construct<rect_type>(-100, -100, 256 + 100, 256 + 100);
   for (size_t i = 0; i < vd.num_cells(); i++) {
+    std::cout << "cell: " << i << std::endl;
     const auto &cell = vd.cells()[i];
     Cell my_cell;
     std::vector<Vertex> vertices_vector;
@@ -160,7 +161,7 @@ Diagram *build_diagram(float *points, size_t len) {
     diagram->vertices[i] = my_vertex;
   }
 
-  rect_type brect_ = boost::polygon::construct<rect_type>(-100, -100, 612, 612);
+  rect_type brect_ = boost::polygon::construct<rect_type>(-0, -0, 100, 100);
 
   for (size_t i = 0; i < vd.num_edges(); i++) {
     Edge my_edge;
