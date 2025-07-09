@@ -14,3 +14,5 @@ CreateFolder $dist_dir/js  $false
 # Copy-Item -Path $build_dir/* -Include *.js, *.ts, *.wasm -Destination ./httpdocs
 # Copy-Item -Path ./js/* -Destination $dist_dir
 # Copy-Item -Path ./index.html -Destination $dist_dir
+
+npm run build

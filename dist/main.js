@@ -51,8 +51,8 @@ export function display_edges(edges, ctx) {
 export function display_cells(cells, ctx) {
     for (let cell of cells) {
         let color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-        // ctx.fillStyle = color;
-        ctx.fillStyle = "white";
+        ctx.fillStyle = color;
+        // ctx.fillStyle = "white";
         ctx.beginPath();
         ctx.moveTo(cell.vertices[0].x, cell.vertices[0].y);
         for (let vtx of cell.vertices) {

@@ -13,8 +13,8 @@ function init() {
   let coords = [];
   for (let i = 0; i < 15; i++) {
     for (let j = 0; j < 15; j++) {
-      coords.push(i * 20);
-      coords.push(j * 20);
+      coords.push(Math.random() * 512);
+      coords.push(Math.random() * 512);
     }
   }
   let diagram = BuildDiagram(coords);
