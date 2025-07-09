@@ -5,19 +5,6 @@ https://www.boost.org/doc/libs/1_55_0/libs/polygon/example/voronoi_visualizer.cp
 
 #include "voronoi_diagram.h"
 
-using boost::polygon::construct_voronoi;
-using boost::polygon::point_data;
-using boost::polygon::voronoi_cell;
-using boost::polygon::voronoi_diagram;
-using boost::polygon::voronoi_edge;
-
-using namespace boost::polygon;
-typedef voronoi_diagram<double> VD;
-typedef VD::cell_type::source_index_type source_index_type;
-typedef double coordinate_type;
-typedef VD::cell_type::source_category_type source_category_type;
-typedef rectangle_data<coordinate_type> rect_type;
-
 namespace gui2one {
 extern "C" {
 
@@ -36,6 +23,26 @@ retrieve_point(const voronoi_cell<double> &cell,
   // } else {
   //   return high(segment_data_[index]);
   // }
+}
+rect_type compute_bounding_rect(Vertex *points, int size) {
+  int min_x = std::numeric_limits<int>::max();
+  int min_y = std::numeric_limits<int>::max();
+  int max_x = std::numeric_limits<int>::min();
+  int max_y = std::numeric_limits<int>::min();
+
+  for (size_t i = 0; i < size; i++) {
+    const Vertex &pt = points[i];
+    if (pt.x < min_x)
+      min_x = pt.x;
+    if (pt.y < min_y)
+      min_y = pt.y;
+    if (pt.x > max_x)
+      max_x = pt.x;
+    if (pt.y > max_y)
+      max_y = pt.y;
+  }
+
+  return rect_type(min_x, min_y, max_x, max_y);
 }
 
 void clip_infinite_edge(const voronoi_edge<double> &edge,
@@ -90,11 +97,11 @@ void clip_infinite_edge(const voronoi_edge<double> &edge,
 }
 
 EMSCRIPTEN_KEEPALIVE
-Diagram *build_diagram(float *points, size_t len) {
+Diagram *build_diagram(float *fpoints, size_t len) {
   std::vector<point_data<double>> vertices;
 
   for (size_t i = 0; i + 1 < len; i += 2) {
-    vertices.push_back({points[i], points[i + 1]});
+    vertices.push_back({fpoints[i], fpoints[i + 1]});
 
     // std::cout << "vertex: " << points[i] << ", " << points[i + 1] <<
     // std::endl;
@@ -114,8 +121,17 @@ Diagram *build_diagram(float *points, size_t len) {
   diagram->num_edges = vd.num_edges();
   diagram->edges = new Edge[vd.num_edges()];
 
+  for (size_t i = 0; i < diagram->num_vertices; i++) {
+    Vertex my_vertex;
+    my_vertex.x = vd.vertices()[i].x();
+    my_vertex.y = vd.vertices()[i].y();
+    diagram->vertices[i] = my_vertex;
+  }
+
   rect_type brect_2 =
-      boost::polygon::construct<rect_type>(-2048, -2048, 2048, 2048);
+      compute_bounding_rect(diagram->vertices, diagram->num_vertices);
+  // rect_type brect_2 =
+  //     boost::polygon::construct<rect_type>(-2048, -2048, 2048, 2048);
   for (size_t i = 0; i < vd.num_cells(); i++) {
     // std::cout << "cell: " << i << std::endl;
     const auto &cell = vd.cells()[i];
@@ -153,12 +169,6 @@ Diagram *build_diagram(float *points, size_t len) {
     }
 
     diagram->cells[i] = my_cell;
-  }
-  for (size_t i = 0; i < diagram->num_vertices; i++) {
-    Vertex my_vertex;
-    my_vertex.x = vd.vertices()[i].x();
-    my_vertex.y = vd.vertices()[i].y();
-    diagram->vertices[i] = my_vertex;
   }
 
   rect_type brect_ = boost::polygon::construct<rect_type>(-0, -0, 100, 100);

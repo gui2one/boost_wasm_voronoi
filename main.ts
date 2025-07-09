@@ -84,7 +84,8 @@ export function display_edges(edges: Edge[], ctx: CanvasRenderingContext2D) {
 
 export function display_cells(cells: Cell[], ctx: CanvasRenderingContext2D) {
   for (let cell of cells) {
-    let color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+    // let color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+    let color = `#${Math.floor(Math.random() * 16777215).toString(16)}FF`;
 
     ctx.fillStyle = color;
     // ctx.fillStyle = "white";
