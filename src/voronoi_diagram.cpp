@@ -114,7 +114,8 @@ Diagram *build_diagram(float *points, size_t len) {
   diagram->num_edges = vd.num_edges();
   diagram->edges = new Edge[vd.num_edges()];
 
-  rect_type brect_2 = boost::polygon::construct<rect_type>(0, 0, 1000, 1000);
+  rect_type brect_2 =
+      boost::polygon::construct<rect_type>(-2048, -2048, 2048, 2048);
   for (size_t i = 0; i < vd.num_cells(); i++) {
     // std::cout << "cell: " << i << std::endl;
     const auto &cell = vd.cells()[i];
