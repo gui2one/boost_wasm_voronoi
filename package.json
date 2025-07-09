@@ -13,9 +13,11 @@
     "license": "MIT",
     "devDependencies": {
         "tsc": "^2.0.4",
-        "typescript": "^5.8.3"
+        "typescript": "^5.8.3",
+        "vite": "^7.0.3"
     },
     "scripts": {
+        "dev": "vite build --watch",
         "build": "tsc && npm run copy_files && npm run copy_files2",
         "copy_files": "cp build_wasm/boost_voronoi.wasm ./dist/build_wasm/boost_voronoi.wasm && cp build_wasm/boost_voronoi.js ./dist/build_wasm/boost_voronoi.js && cp build_wasm/boost_voronoi.d.ts ./dist/build_wasm/boost_voronoi.d.ts && cp index.html ./dist/index.html && cp js/test_module.js ./dist/js/test_module.js",
         "copy_files2": "cp style.css ./dist/style.css"

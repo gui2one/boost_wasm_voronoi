@@ -87,8 +87,8 @@ export function display_cells(cells: Cell[], ctx: CanvasRenderingContext2D) {
     // let color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
     let color = `#${Math.floor(Math.random() * 16777215).toString(16)}FF`;
 
-    ctx.fillStyle = color;
-    // ctx.fillStyle = "white";
+    // ctx.fillStyle = color;
+    ctx.fillStyle = "white";
     ctx.beginPath();
     ctx.moveTo(cell.vertices[0].x, cell.vertices[0].y);
     for (let vtx of cell.vertices) {
