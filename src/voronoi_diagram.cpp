@@ -103,8 +103,8 @@ Diagram *build_diagram(float *fpoints, size_t len) {
   for (size_t i = 0; i + 1 < len; i += 2) {
     vertices.push_back({fpoints[i], fpoints[i + 1]});
 
-    // std::cout << "vertex: " << points[i] << ", " << points[i + 1] <<
-    // std::endl;
+    // std::cout << "vertex: " << fpoints[i] << ", " << fpoints[i + 1]
+    //           << std::endl;
   }
 
   VD vd;

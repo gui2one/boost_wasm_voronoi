@@ -12,15 +12,16 @@ include_directories(
     D:/Boost/include/boost-1_88
     C:/Users/Sprayfly/AppData/Local/emsdk/upstream/emscripten
 )
+
 add_executable(${PROJECT_NAME}
     src/main.cpp
     src/voronoi_diagram.cpp
 )
-
+target_precompile_headers(${PROJECT_NAME} PRIVATE src/pch.hpp)
 target_include_directories(
     ${PROJECT_NAME} PUBLIC
-    D:/Boost/include/boost-1_88
-    C:/Users/Sprayfly/AppData/Local/emsdk/upstream/emscripten
+    # D:/Boost/include/boost-1_88
+    # C:/Users/Sprayfly/AppData/Local/emsdk/upstream/emscripten
 )
 
 # Detect compiler and disable warnings accordingly
@@ -37,7 +38,9 @@ if(EMSCRIPTEN)
 
 
 set(CMAKE_CXX_FLAGS "-O3")
-
+target_precompile_headers(
+    ${PROJECT_NAME} PUBLIC
+    src/pch.hpp)
 target_compile_options(
     ${PROJECT_NAME} PUBLIC
     "-sSHARED_MEMORY=0" 

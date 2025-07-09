@@ -2,19 +2,7 @@
 #ifndef VORONOI_DIAGRAM_H
 #define VORONOI_DIAGRAM_H
 
-#include <iostream>
-#include <memory>
-
-#include <boost/polygon/polygon.hpp>
-#include <boost/polygon/voronoi.hpp>
-
-#ifdef __EMSCRIPTEN__
-#include <emscripten.h>
-#include <emscripten/bind.h>
-#endif
-#include <string>
-#include <vector>
-
+#include "pch.hpp"
 using boost::polygon::construct_voronoi;
 using boost::polygon::point_data;
 using boost::polygon::voronoi_cell;
