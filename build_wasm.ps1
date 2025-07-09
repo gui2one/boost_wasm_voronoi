@@ -11,8 +11,12 @@ ClearFolderContent $dist_dir
 CreateFolder $dist_dir  $false
 CreateFolder $dist_dir/build_wasm  $false
 CreateFolder $dist_dir/js  $false
-# Copy-Item -Path $build_dir/* -Include *.js, *.ts, *.wasm -Destination ./httpdocs
-# Copy-Item -Path ./js/* -Destination $dist_dir
+Copy-Item -Path $build_dir/* -Include *.js, *.ts, *.wasm -Destination ./httpdocs
+Copy-Item -Path ./js/* -Destination $dist_dir
 # Copy-Item -Path ./index.html -Destination $dist_dir
 
-npm run build
+Copy-Item -Path ./preview_dist/* -Include *.js, *.ts, *.wasm -Destination ./httpdocs
+
+
+
+

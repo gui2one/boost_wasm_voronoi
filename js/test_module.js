@@ -9,19 +9,18 @@ canvas.height = 512;
 let ctx = canvas.getContext("2d");
 document.body.appendChild(canvas);
 let coords = [];
-
+// for (let i = 0; i < 15; i++) {
+//   for (let j = 0; j < 15; j++) {
+//     coords.push(Math.random() * 512);
+//     coords.push(Math.random() * 512);
+//   }
+// }
 function add_point(x, y) {
   coords.push(x);
   coords.push(y);
 }
 
 function init() {
-  // for (let i = 0; i < 15; i++) {
-  //   for (let j = 0; j < 15; j++) {
-  //     coords.push(Math.random() * 512);
-  //     coords.push(Math.random() * 512);
-  //   }
-  // }
   let diagram = BuildDiagram(coords);
   console.log(diagram);
   if (ctx === null) {
@@ -33,10 +32,10 @@ function init() {
 }
 init();
 
-document.addEventListener("click", () => {
-  console.clear();
-  init();
-});
+// document.addEventListener("click", () => {
+//   console.clear();
+//   init();
+// });
 
 window.addEventListener("resize", () => {
   init();

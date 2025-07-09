@@ -102,10 +102,14 @@ Diagram *build_diagram(float *fpoints, size_t len) {
 
   for (size_t i = 0; i + 1 < len; i += 2) {
     vertices.push_back({fpoints[i], fpoints[i + 1]});
-
-    // std::cout << "vertex: " << fpoints[i] << ", " << fpoints[i + 1]
-    //           << std::endl;
   }
+
+  // rect_type brect = boost::polygon::construct<rect_type>(bounds[0],
+  // bounds[1],
+  //                                                        bounds[2],
+  //                                                        bounds[3]);
+  rect_type brect =
+      boost::polygon::construct<rect_type>(-1000, -1000, 1000, 1000);
 
   VD vd;
   construct_voronoi(vertices.begin(), vertices.end(), &vd);
@@ -130,8 +134,7 @@ Diagram *build_diagram(float *fpoints, size_t len) {
 
   rect_type brect_2 =
       compute_bounding_rect(diagram->vertices, diagram->num_vertices);
-  // rect_type brect_2 =
-  //     boost::polygon::construct<rect_type>(-2048, -2048, 2048, 2048);
+
   for (size_t i = 0; i < vd.num_cells(); i++) {
     // std::cout << "cell: " << i << std::endl;
     const auto &cell = vd.cells()[i];
@@ -171,15 +174,13 @@ Diagram *build_diagram(float *fpoints, size_t len) {
     diagram->cells[i] = my_cell;
   }
 
-  rect_type brect_ = boost::polygon::construct<rect_type>(-0, -0, 100, 100);
-
   for (size_t i = 0; i < vd.num_edges(); i++) {
     Edge my_edge;
 
     if (vd.edges()[i].is_infinite()) {
       std::vector<point_data<double>> clipped_edge;
 
-      clip_infinite_edge(vd.edges()[i], clipped_edge, brect_, vertices);
+      clip_infinite_edge(vd.edges()[i], clipped_edge, brect_2, vertices);
       my_edge.vertex0.x = clipped_edge[0].x();
       my_edge.vertex0.y = clipped_edge[0].y();
       my_edge.vertex1.x = clipped_edge[1].x();
