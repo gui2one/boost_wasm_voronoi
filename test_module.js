@@ -11,7 +11,7 @@ canvas.height = 512;
 let ctx = canvas.getContext("2d");
 document.body.appendChild(canvas);
 let coords = [];
-for (let i = 0; i < 2; i++) {
+for (let i = 0; i < 15; i++) {
   coords.push(Math.random() * 512);
   coords.push(Math.random() * 512);
 }

@@ -45,7 +45,7 @@ struct Diagram {
 extern "C" {
 // rect_type compute_bounding_rect(const std::vector<Point> &points);
 rect_type compute_bounding_rect(Vertex *points, int size);
-Diagram *build_diagram(float *points, size_t length);
+Diagram *build_diagram(float *points, size_t length, float *bounds);
 }
 
 } // namespace gui2one

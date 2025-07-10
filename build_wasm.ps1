@@ -15,7 +15,7 @@ Copy-Item -Path $build_dir/* -Include *.js, *.ts, *.wasm -Destination $dist_dir/
 Copy-Item -Path ./js/* -Destination $dist_dir
 # Copy-Item -Path ./index.html -Destination $dist_dir
 
-Copy-Item -Path $build_dir/* -Include *.js, *.ts, *.wasm -Destination ./preview_dist
+# Copy-Item -Path $build_dir/* -Include *.js, *.ts, *.wasm -Destination ./preview_dist
 
 
 

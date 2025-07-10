@@ -97,19 +97,12 @@ void clip_infinite_edge(const voronoi_edge<double> &edge,
 }
 
 EMSCRIPTEN_KEEPALIVE
-Diagram *build_diagram(float *fpoints, size_t len) {
+Diagram *build_diagram(float *fpoints, size_t len, float *bounds) {
   std::vector<point_data<double>> vertices;
 
   for (size_t i = 0; i + 1 < len; i += 2) {
     vertices.push_back({fpoints[i], fpoints[i + 1]});
   }
-
-  // rect_type brect = boost::polygon::construct<rect_type>(bounds[0],
-  // bounds[1],
-  //                                                        bounds[2],
-  //                                                        bounds[3]);
-  rect_type brect =
-      boost::polygon::construct<rect_type>(-1000, -1000, 1000, 1000);
 
   VD vd;
   construct_voronoi(vertices.begin(), vertices.end(), &vd);
@@ -132,8 +125,11 @@ Diagram *build_diagram(float *fpoints, size_t len) {
     diagram->vertices[i] = my_vertex;
   }
 
-  rect_type brect_2 =
-      compute_bounding_rect(diagram->vertices, diagram->num_vertices);
+  // rect_type brect_2 =
+  //     compute_bounding_rect(diagram->vertices, diagram->num_vertices);
+
+  rect_type brect_2 = boost::polygon::construct<rect_type>(
+      bounds[0], bounds[1], bounds[2], bounds[3]);
 
   for (size_t i = 0; i < vd.num_cells(); i++) {
     // std::cout << "cell: " << i << std::endl;
@@ -203,9 +199,11 @@ Diagram *build_diagram(float *fpoints, size_t len) {
     diagram->edges[i] = my_edge;
   }
 
-  // std::cout << "num vertices (cpp): " << diagram->num_vertices << std::endl;
-  // std::cout << "num edges (cpp): " << diagram->num_edges << std::endl;
-  // std::cout << "num cells (cpp): " << diagram->num_cells << std::endl;
+  std::cout << "num vertices (cpp): " << diagram->num_vertices << std::endl;
+  std::cout << "num edges (cpp): " << diagram->num_edges << std::endl;
+  std::cout << "num cells (cpp): " << diagram->num_cells << std::endl;
+  std::cout << "bounds (cpp): " << bounds[0] << "," << bounds[1] << ","
+            << bounds[2] << "," << bounds[3] << std::endl;
   return diagram;
 }
 }

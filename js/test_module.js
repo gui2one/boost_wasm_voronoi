@@ -1,6 +1,6 @@
 console.log("test_module.js");
 
-import { BuildDiagram, display_cells } from "../main.js";
+import { BuildDiagram, display_cells, display_vertices } from "../main.js";
 
 let canvas = document.createElement("canvas");
 
@@ -11,7 +11,7 @@ canvas.height = 512;
 let ctx = canvas.getContext("2d");
 document.body.appendChild(canvas);
 let coords = [];
-for (let i = 0; i < 15; i++) {
+for (let i = 0; i < 2; i++) {
   coords.push(Math.random() * 512);
   coords.push(Math.random() * 512);
 }
@@ -29,14 +29,19 @@ function init() {
   }
   ctx?.clearRect(0, 0, canvas.width, canvas.height);
   display_cells(diagram.cells, ctx);
+  // display_vertices(diagram.vertices, ctx);
+  display_coords(coords, ctx);
 }
 init();
 
-// document.addEventListener("click", () => {
-//   console.clear();
-//   init();
-// });
-
+function display_coords(coords, ctx) {
+  // ctx?.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "red";
+  for (let i = 0; i < coords.length; i += 2) {
+    // console.log(coords[i], coords[i + 1);
+    ctx?.fillRect(coords[i] - 1, coords[i + 1] - 1, 3, 3);
+  }
+}
 window.addEventListener("resize", () => {
   init();
 });

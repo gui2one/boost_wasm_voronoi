@@ -41,12 +41,12 @@ export function BuildDiagram(_coords: number[]): BoostDiagram {
   // Copy JS data to WASM heap
   voronoi.HEAPF32.set(coords, ptr / 4); // divide by coords.BYTES_PER_ELEMENT ?!!
 
-  // const bounds_bytes = 4 * coords.BYTES_PER_ELEMENT;
-  // const bounds_ptr = voronoi._malloc(bounds_bytes);
-  // let bounds = [0, 0, 512, 512];
-  // voronoi.HEAPF32.set(bounds, bounds_ptr / 4);
+  const bounds_bytes = 4 * 4;
+  const bounds_ptr = voronoi._malloc(bounds_bytes);
+  let bounds = [0, 0, 512, 512];
+  voronoi.HEAPF32.set(bounds, bounds_ptr / 4);
 
-  const diagram = voronoi._build_diagram(ptr, coords.length);
+  const diagram = voronoi._build_diagram(ptr, coords.length, bounds_ptr);
 
   let data = getMeshData(diagram);
 
