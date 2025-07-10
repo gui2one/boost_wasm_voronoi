@@ -22,6 +22,31 @@ export type Cell = {
   source_index: number;
   vertices: Vertex[];
 };
+
+export class ColorWithAlpha {
+  r: number;
+  g: number;
+  b: number;
+  a: number;
+  constructor(r: number, g: number, b: number, a: number) {
+    this.r = r;
+    this.g = g;
+    this.b = b;
+    this.a = a;
+  }
+
+  static from_hex_string(str: string) {
+    const r = parseInt(str.slice(1, 3), 16);
+    const g = parseInt(str.slice(3, 5), 16);
+    const b = parseInt(str.slice(5, 7), 16);
+    const a = parseInt(str.slice(7, 9), 16);
+    return new ColorWithAlpha(r, g, b, a);
+  }
+
+  to_string() {
+    return `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a})`;
+  }
+}
 export function BuildDiagram(_sites: Vertex[]): BoostDiagram {
   let coords;
 
@@ -61,26 +86,17 @@ export function BuildDiagram(_sites: Vertex[]): BoostDiagram {
   return data;
 }
 
-export function display_coords(
-  coords: Vertex[],
-  ctx: CanvasRenderingContext2D
-) {
-  // ctx?.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "red";
-  for (let i = 0; i < coords.length; i += 1) {
-    // console.log(coords[i], coords[i + 1]);
-    ctx?.fillRect(coords[i].x - 1, coords[i].y - 1, 3, 3);
-  }
-}
-
 export function display_vertices(
   vertices: Vertex[],
-  ctx: CanvasRenderingContext2D
+  ctx: CanvasRenderingContext2D,
+  color: ColorWithAlpha = new ColorWithAlpha(255, 0, 0, 0.2),
+  size: number = 10
 ) {
-  ctx.fillStyle = "green";
+  ctx.fillStyle = color.to_string();
+
   for (let i = 0; i < vertices.length; i++) {
-    // console.log(coords[i], coords[i + 1]);
-    ctx?.fillRect(vertices[i].x - 1, vertices[i].y - 1, 3, 3);
+    let offset = Math.floor(size / 2);
+    ctx?.fillRect(vertices[i].x - offset, vertices[i].y - offset, size, size);
   }
 }
 
@@ -110,7 +126,7 @@ export function display_cells(cells: Cell[], ctx: CanvasRenderingContext2D) {
 
     ctx.closePath();
     ctx.stroke();
-    ctx.fill();
+    // ctx.fill();
   }
 }
 
