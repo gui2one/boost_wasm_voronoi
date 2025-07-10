@@ -16,6 +16,7 @@ typedef double coordinate_type;
 typedef VD::cell_type::source_category_type source_category_type;
 typedef rectangle_data<coordinate_type> rect_type;
 typedef point_data<coordinate_type> Point;
+typedef segment_data<coordinate_type> Segment;
 namespace gui2one {
 
 struct Vertex {

@@ -98,14 +98,15 @@ void clip_infinite_edge(const voronoi_edge<double> &edge,
 
 EMSCRIPTEN_KEEPALIVE
 Diagram *build_diagram(float *fpoints, size_t len, float *bounds) {
-  std::vector<point_data<double>> vertices;
-
+  std::vector<Point> sites;
+  std::vector<Segment> segments;
   for (size_t i = 0; i + 1 < len; i += 2) {
-    vertices.push_back({fpoints[i], fpoints[i + 1]});
+    sites.push_back({fpoints[i], fpoints[i + 1]});
   }
 
   VD vd;
-  construct_voronoi(vertices.begin(), vertices.end(), &vd);
+  construct_voronoi(sites.begin(), sites.end(), segments.begin(),
+                    segments.end(), &vd);
 
   Diagram *diagram = new Diagram();
 
@@ -129,7 +130,8 @@ Diagram *build_diagram(float *fpoints, size_t len, float *bounds) {
   //     compute_bounding_rect(diagram->vertices, diagram->num_vertices);
 
   rect_type brect_2 = boost::polygon::construct<rect_type>(
-      bounds[0], bounds[1], bounds[2], bounds[3]);
+      bounds[0] - 5000.0f, bounds[1] - 5000.0f, bounds[2] + 5000.0f,
+      bounds[3] + 5000.0f);
 
   for (size_t i = 0; i < vd.num_cells(); i++) {
     // std::cout << "cell: " << i << std::endl;
@@ -145,7 +147,7 @@ Diagram *build_diagram(float *fpoints, size_t len, float *bounds) {
       edge = edge->next();
       if (edge->is_infinite()) {
         std::vector<point_data<double>> clipped_edge;
-        clip_infinite_edge(*edge, clipped_edge, brect_2, vertices);
+        clip_infinite_edge(*edge, clipped_edge, brect_2, sites);
         // Add both endpoints of clipped infinite edge
         for (const auto &pt : clipped_edge) {
           vertices_vector.push_back({pt.x(), pt.y()});
@@ -176,7 +178,7 @@ Diagram *build_diagram(float *fpoints, size_t len, float *bounds) {
     if (vd.edges()[i].is_infinite()) {
       std::vector<point_data<double>> clipped_edge;
 
-      clip_infinite_edge(vd.edges()[i], clipped_edge, brect_2, vertices);
+      clip_infinite_edge(vd.edges()[i], clipped_edge, brect_2, sites);
       my_edge.vertex0.x = clipped_edge[0].x();
       my_edge.vertex0.y = clipped_edge[0].y();
       my_edge.vertex1.x = clipped_edge[1].x();
@@ -199,11 +201,12 @@ Diagram *build_diagram(float *fpoints, size_t len, float *bounds) {
     diagram->edges[i] = my_edge;
   }
 
-  std::cout << "num vertices (cpp): " << diagram->num_vertices << std::endl;
-  std::cout << "num edges (cpp): " << diagram->num_edges << std::endl;
-  std::cout << "num cells (cpp): " << diagram->num_cells << std::endl;
-  std::cout << "bounds (cpp): " << bounds[0] << "," << bounds[1] << ","
-            << bounds[2] << "," << bounds[3] << std::endl;
+  // std::cout << "num vertices (cpp): " << diagram->num_vertices << std::endl;
+  // std::cout << "num edges (cpp): " << diagram->num_edges << std::endl;
+  // std::cout << "num cells (cpp): " << diagram->num_cells << std::endl;
+  // std::cout << "bounds (cpp): " << bounds[0] << "," << bounds[1] << ","
+  //           << bounds[2] << "," << bounds[3] << std::endl;
+
   return diagram;
 }
 }

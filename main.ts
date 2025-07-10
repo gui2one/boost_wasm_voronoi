@@ -22,16 +22,21 @@ export type Cell = {
   source_index: number;
   vertices: Vertex[];
 };
-export function BuildDiagram(_coords: number[]): BoostDiagram {
+export function BuildDiagram(_sites: Vertex[]): BoostDiagram {
   let coords;
-  if (_coords === undefined) {
+
+  if (_sites === undefined) {
     const numPoints = 500;
     coords = new Float32Array(numPoints * 2);
     for (let i = 0; i < coords.length; i++) {
       coords[i] = Math.random() * 512;
     }
   } else {
-    coords = new Float32Array(_coords);
+    coords = new Float32Array(_sites.length * 2);
+    for (let i = 0; i < _sites.length; i++) {
+      coords[i * 2] = _sites[i].x;
+      coords[i * 2 + 1] = _sites[i].y;
+    }
   }
 
   // Allocate memory in WASM heap
@@ -56,12 +61,15 @@ export function BuildDiagram(_coords: number[]): BoostDiagram {
   return data;
 }
 
-function display_coords(coords: number[], ctx: CanvasRenderingContext2D) {
+export function display_coords(
+  coords: Vertex[],
+  ctx: CanvasRenderingContext2D
+) {
   // ctx?.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = "red";
-  for (let i = 0; i < coords.length; i += 2) {
+  for (let i = 0; i < coords.length; i += 1) {
     // console.log(coords[i], coords[i + 1]);
-    ctx?.fillRect(coords[i] - 1, coords[i + 1] - 1, 3, 3);
+    ctx?.fillRect(coords[i].x - 1, coords[i].y - 1, 3, 3);
   }
 }
 

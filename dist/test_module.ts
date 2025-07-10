@@ -1,6 +1,11 @@
 console.log("test_module.js");
 
-import { BuildDiagram, display_cells, display_vertices } from "../main.js";
+import {
+  BuildDiagram,
+  display_cells,
+  display_vertices,
+  Vertex,
+} from "../main.js";
 
 let canvas = document.createElement("canvas");
 
@@ -11,17 +16,21 @@ canvas.height = 512;
 let ctx = canvas.getContext("2d");
 document.body.appendChild(canvas);
 let coords = [];
-for (let i = 0; i < 2; i++) {
-  coords.push(Math.random() * 512);
-  coords.push(Math.random() * 512);
+let sites: Vertex[] = [];
+for (let i = 0; i < 3; i++) {
+  sites.push({ x: Math.random() * 512, y: Math.random() * 512 });
+  // coords.push(Math.random() * 512);
+  // coords.push(Math.random() * 512);
 }
 function add_point(x, y) {
-  coords.push(x);
-  coords.push(y);
+  sites.push({ x: x, y: y });
+  // coords.push(x);
+  // coords.push(y);
 }
 
 function init() {
-  let diagram = BuildDiagram(coords);
+  console.clear();
+  let diagram = BuildDiagram(sites);
   // console.log(diagram);
   if (ctx === null) {
     console.error("Rendering context is null");
