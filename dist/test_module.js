@@ -5,6 +5,7 @@ import { BuildDiagram, display_cells } from "../main.js";
 let canvas = document.createElement("canvas");
 
 let mouse_down = false;
+let add_sample = true;
 canvas.width = 512;
 canvas.height = 512;
 let ctx = canvas.getContext("2d");
@@ -21,7 +22,7 @@ function add_point(x, y) {
 
 function init() {
   let diagram = BuildDiagram(coords);
-  console.log(diagram);
+  // console.log(diagram);
   if (ctx === null) {
     console.error("Rendering context is null");
     return;
@@ -50,6 +51,14 @@ canvas.addEventListener("mouseup", (e) => {
 
 canvas.addEventListener("mousemove", (e) => {
   if (!mouse_down) return;
-  add_point(e.offsetX, e.offsetY);
-  init();
+  if (add_sample) {
+    setTimeout(() => {
+      add_point(e.offsetX, e.offsetY);
+      init();
+      add_sample = true;
+    }, 30);
+  }
+
+  // reset
+  add_sample = false;
 });
