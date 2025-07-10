@@ -131,6 +131,9 @@ export function display_cells(cells: Cell[], ctx: CanvasRenderingContext2D) {
 }
 
 function getMeshData(meshPtr: number): BoostDiagram {
+  /*
+  BEWARE : because I am using WASM 32 version. Even size_t members are 32 bit
+  */
   const HEAPU32 = voronoi.HEAPU32;
   const HEAPF64 = voronoi.HEAPF64;
 
