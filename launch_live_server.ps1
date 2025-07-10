@@ -1,1 +1,1 @@
-npx live-server --port=3000 ./dist
+npx live-server --port=3000 ./preview_dist

@@ -203,9 +203,9 @@ Diagram *build_diagram(float *fpoints, size_t len) {
     diagram->edges[i] = my_edge;
   }
 
-  std::cout << "num vertices (cpp): " << diagram->num_vertices << std::endl;
-  std::cout << "num edges (cpp): " << diagram->num_edges << std::endl;
-  std::cout << "num cells (cpp): " << diagram->num_cells << std::endl;
+  // std::cout << "num vertices (cpp): " << diagram->num_vertices << std::endl;
+  // std::cout << "num edges (cpp): " << diagram->num_edges << std::endl;
+  // std::cout << "num cells (cpp): " << diagram->num_cells << std::endl;
   return diagram;
 }
 }

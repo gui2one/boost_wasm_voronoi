@@ -4,17 +4,17 @@ import { BuildDiagram, display_cells } from "../main.js";
 
 let canvas = document.createElement("canvas");
 
+let mouse_down = false;
+let add_sample = true;
 canvas.width = 512;
 canvas.height = 512;
 let ctx = canvas.getContext("2d");
 document.body.appendChild(canvas);
 let coords = [];
-// for (let i = 0; i < 15; i++) {
-//   for (let j = 0; j < 15; j++) {
-//     coords.push(Math.random() * 512);
-//     coords.push(Math.random() * 512);
-//   }
-// }
+for (let i = 0; i < 15; i++) {
+  coords.push(Math.random() * 512);
+  coords.push(Math.random() * 512);
+}
 function add_point(x, y) {
   coords.push(x);
   coords.push(y);
@@ -22,7 +22,7 @@ function add_point(x, y) {
 
 function init() {
   let diagram = BuildDiagram(coords);
-  console.log(diagram);
+  // console.log(diagram);
   if (ctx === null) {
     console.error("Rendering context is null");
     return;
@@ -41,7 +41,24 @@ window.addEventListener("resize", () => {
   init();
 });
 
-canvas.addEventListener("click", (e) => {
-  add_point(e.offsetX, e.offsetY);
-  init();
+canvas.addEventListener("mousedown", (e) => {
+  mouse_down = true;
+});
+
+canvas.addEventListener("mouseup", (e) => {
+  mouse_down = false;
+});
+
+canvas.addEventListener("mousemove", (e) => {
+  if (!mouse_down) return;
+  if (add_sample) {
+    setTimeout(() => {
+      add_point(e.offsetX, e.offsetY);
+      init();
+      add_sample = true;
+    }, 30);
+  }
+
+  // reset
+  add_sample = false;
 });
