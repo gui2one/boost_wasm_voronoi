@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import Path from "path";
+import Path from "node:path";
 export default defineConfig({
   base: "/",
   build: {
@@ -12,7 +12,7 @@ export default defineConfig({
       ],
       output: {
         preserveModules: false,
-        entryFileNames: () => "[name].[format].js",
+        entryFileNames: () => "[name].js",
         assetFileNames: () => "[name].[ext]",
       },
     },
