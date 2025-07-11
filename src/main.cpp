@@ -1,4 +1,6 @@
+#include "contour_finder.h"
 #include "voronoi_diagram.h"
+
 
 // int main() {
 //   const char *name = "master";

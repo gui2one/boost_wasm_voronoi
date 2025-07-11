@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.13)
 
 
 set (CMAKE_CXX_STANDARD 20)
-set(OPENCV_DIR D:/dev/opencv/build)
+set(OpenCV_DIR "D:\\dev\\opencv\\build_emscripten\\install")  # or path to OpenCVConfig.cmake
+
 project(boost_voronoi)
 
 
@@ -11,31 +12,26 @@ add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 include_directories(
     D:/Boost/include/boost-1_88
     C:/Users/Sprayfly/AppData/Local/emsdk/upstream/emscripten
-    $OPENCV_DIR/include
+    "${OpenCV_DIR}\\include\\opencv4"
 )
 
 add_executable(${PROJECT_NAME}
     src/main.cpp
     src/voronoi_diagram.cpp
+    src/contour_finder.cpp
 )
-target_precompile_headers(${PROJECT_NAME} PRIVATE src/pch.hpp)
-target_link_directories(
-    ${PROJECT_NAME} PUBLIC
-    $OPENCV_DIR/x64/vc16/lib
-)
-target_include_directories(
-    ${PROJECT_NAME} PUBLIC
-    # D:/Boost/include/boost-1_88
-    # C:/Users/Sprayfly/AppData/Local/emsdk/upstream/emscripten
-)
+target_precompile_headers(${PROJECT_NAME} PUBLIC src/pch.hpp)
 
+target_include_directories(${PROJECT_NAME} PUBLIC "${OpenCV_DIR}\\include\\opencv4")
+target_link_directories(${PROJECT_NAME} PUBLIC "${OpenCV_DIR}\\lib")
+target_link_libraries(${PROJECT_NAME} libopencv_world.a)
 # Detect compiler and disable warnings accordingly
 if(MSVC)
     # Disable warnings for MSVC
-    target_compile_options(${PROJECT_NAME} PRIVATE /w)
+    target_compile_options(${PROJECT_NAME} PUBLIC /w)
 else()
     # Disable warnings for GCC, Clang, or Emscripten (which uses Clang)
-    target_compile_options(${PROJECT_NAME} PRIVATE -w)
+    target_compile_options(${PROJECT_NAME} PUBLIC -w)
 endif()
 
 
@@ -53,7 +49,6 @@ target_compile_options(
     
 target_link_options(
     ${PROJECT_NAME} PUBLIC
-    "-opencv_world4120.lib"
     "-sWASM=1"
     "-sEXPORT_ES6=1"
     "-sMODULARIZE=1"

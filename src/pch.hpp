@@ -5,6 +5,10 @@
 #include <boost/polygon/polygon.hpp>
 #include <boost/polygon/voronoi.hpp>
 
+#include <opencv2/core.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
+
 #include <iostream>
 #include <memory>
 #include <string>

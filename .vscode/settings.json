@@ -111,6 +111,7 @@
   "cmake.ignoreCMakeListsMissing": false,
   "C_Cpp.default.includePath": [
     "D:/Boost/include/boost-1_88",
+    "D:/dev/opencv/build_emscripten/install/include/opencv4",
     "C:/Users/Sprayfly/AppData/Local/emsdk/upstream/emscripten/system/include",
     "C:/Users/Sprayfly/AppData/Local/emsdk/upstream/emscripten/system/",
     "C:/Users/Sprayfly/AppData/Local/emsdk/upstream/emscripten/system/libc",
