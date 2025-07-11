@@ -47,6 +47,16 @@ export class ColorWithAlpha {
     return `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a})`;
   }
 }
+function float32Array_to_wasm_array(array: Float32Array): {
+  ptr: number;
+  len: number;
+} {
+  const bytes = array.length * array.BYTES_PER_ELEMENT;
+  const ptr = voronoi._malloc(bytes);
+  voronoi.HEAPF32.set(array, ptr / 4); // divide by array.BYTES_PER_ELEMENT ?!!
+  return { ptr, len: array.length };
+}
+
 export function BuildDiagram(_sites: Vertex[]): BoostDiagram {
   let coords;
 
@@ -64,24 +74,21 @@ export function BuildDiagram(_sites: Vertex[]): BoostDiagram {
     }
   }
 
-  // Allocate memory in WASM heap
-  const bytes = coords.length * coords.BYTES_PER_ELEMENT;
-  const ptr = voronoi._malloc(bytes);
+  const coords_c_array = float32Array_to_wasm_array(coords);
+  const bounds_c_array = float32Array_to_wasm_array(
+    new Float32Array([0, 0, 512, 512])
+  );
 
-  // Copy JS data to WASM heap
-  voronoi.HEAPF32.set(coords, ptr / 4); // divide by coords.BYTES_PER_ELEMENT ?!!
-
-  const bounds_bytes = 4 * 4;
-  const bounds_ptr = voronoi._malloc(bounds_bytes);
-  let bounds = [0, 0, 512, 512];
-  voronoi.HEAPF32.set(bounds, bounds_ptr / 4);
-
-  const diagram = voronoi._build_diagram(ptr, coords.length, bounds_ptr);
+  const diagram = voronoi._build_diagram(
+    coords_c_array.ptr,
+    coords_c_array.len,
+    bounds_c_array.ptr
+  );
 
   let data = getMeshData(diagram);
 
   // Free memory
-  voronoi._free(ptr);
+  voronoi._free(coords_c_array.ptr);
 
   return data;
 }

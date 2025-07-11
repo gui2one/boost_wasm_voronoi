@@ -38,7 +38,7 @@ function init() {
   ctx?.clearRect(0, 0, canvas.width, canvas.height);
   display_cells(diagram.cells, ctx);
   display_vertices(diagram.vertices, ctx, vertices_color, 5);
-  display_vertices(sites, ctx);
+  // display_vertices(sites, ctx);
 }
 init();
 
