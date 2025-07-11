@@ -13,6 +13,7 @@
     "license": "MIT",
     "devDependencies": {
         "@types/node": "^24.0.13",
+        "pixi.js": "^8.11.0",
         "typescript": "^5.8.3",
         "vite": "^7.0.3"
     },
