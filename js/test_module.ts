@@ -11,6 +11,7 @@ import {
 let canvas = document.createElement("canvas");
 
 let mouse_down = false;
+let mouse_moved = false;
 let add_sample = true;
 canvas.width = 512;
 canvas.height = 512;
@@ -46,8 +47,15 @@ window.addEventListener("resize", () => {
   init();
 });
 
+canvas.addEventListener("click", (e) => {
+  if (mouse_moved) return;
+
+  add_point(e.offsetX, e.offsetY);
+  init();
+});
 canvas.addEventListener("mousedown", (e) => {
   mouse_down = true;
+  mouse_moved = false;
 });
 
 canvas.addEventListener("mouseup", (e) => {
@@ -55,11 +63,13 @@ canvas.addEventListener("mouseup", (e) => {
 });
 
 canvas.addEventListener("mousemove", (e) => {
+  mouse_moved = true;
   if (!mouse_down) return;
+
   if (add_sample) {
+    add_point(e.offsetX, e.offsetY);
+    init();
     setTimeout(() => {
-      add_point(e.offsetX, e.offsetY);
-      init();
       add_sample = true;
     }, 30);
   }

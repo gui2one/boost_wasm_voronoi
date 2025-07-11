@@ -73,11 +73,9 @@ export function BuildDiagram(_sites: Vertex[]): BoostDiagram {
       coords[i * 2 + 1] = _sites[i].y;
     }
   }
-
+  let bounds = new Float32Array([0, 0, 512, 512]);
   const coords_c_array = float32Array_to_wasm_array(coords);
-  const bounds_c_array = float32Array_to_wasm_array(
-    new Float32Array([0, 0, 512, 512])
-  );
+  const bounds_c_array = float32Array_to_wasm_array(bounds);
 
   const diagram = voronoi._build_diagram(
     coords_c_array.ptr,
