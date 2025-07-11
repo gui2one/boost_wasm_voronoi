@@ -1,5 +1,5 @@
 import Voronoi from "./build_wasm/boost_voronoi.js";
-
+import { MemoryReader } from "./js/memory_reader";
 let voronoi = await Voronoi();
 
 export type BoostDiagram = {
@@ -57,9 +57,12 @@ function float32Array_to_wasm_array(array: Float32Array): {
   return { ptr, len: array.length };
 }
 
-export function BuildDiagram(_sites: Vertex[]): BoostDiagram {
+export function BuildDiagram(
+  _sites: Vertex[],
+  _bounds?: number[]
+): BoostDiagram {
   let coords;
-
+  let bounds: Float32Array;
   if (_sites === undefined) {
     const numPoints = 500;
     coords = new Float32Array(numPoints * 2);
@@ -73,7 +76,11 @@ export function BuildDiagram(_sites: Vertex[]): BoostDiagram {
       coords[i * 2 + 1] = _sites[i].y;
     }
   }
-  let bounds = new Float32Array([0, 0, 512, 512]);
+  if (_bounds === undefined) {
+    bounds = new Float32Array([0, 0, 512, 512]);
+  } else {
+    bounds = new Float32Array(_bounds);
+  }
   const coords_c_array = float32Array_to_wasm_array(coords);
   const bounds_c_array = float32Array_to_wasm_array(bounds);
 
@@ -82,6 +89,14 @@ export function BuildDiagram(_sites: Vertex[]): BoostDiagram {
     coords_c_array.len,
     bounds_c_array.ptr
   );
+
+  let mem_reader = new MemoryReader(voronoi.HEAPU32.buffer, diagram);
+  let num_vertices = mem_reader.readSizeT(0);
+  let num_edges = mem_reader.readSizeT(4);
+  let num_cells = mem_reader.readSizeT(8);
+  console.log("num vertices : ", num_vertices);
+  console.log("num edges :", num_edges);
+  console.log("num cells :", num_cells);
 
   let data = getMeshData(diagram);
 
@@ -137,8 +152,9 @@ export function display_cells(cells: Cell[], ctx: CanvasRenderingContext2D) {
 
 function getMeshData(meshPtr: number): BoostDiagram {
   /*
-  BEWARE : because I am using WASM 32 version, Array pointers are 32 bit
+  BEWARE : because I am using WASM 32bit version, Array pointers are 32 bits
   */
+
   const HEAPU32 = voronoi.HEAPU32;
   const HEAPF64 = voronoi.HEAPF64;
 
