@@ -20,7 +20,7 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build && tsc",
-        "copy_files": "cp build_wasm/boost_voronoi.wasm ./dist/build_wasm/boost_voronoi.wasm && cp build_wasm/boost_voronoi.js ./dist/build_wasm/boost_voronoi.js && cp build_wasm/boost_voronoi.d.ts ./dist/build_wasm/boost_voronoi.d.ts && cp index.html ./dist/index.html && cp js/test_module.js ./dist/js/test_module.js",
+        "copy_files": "cp build_wasm/boost_voronoi.wasm ./dist/build_wasm/boost_voronoi.wasm && cp build_wasm/boost_voronoi.js ./dist/build_wasm/boost_voronoi.js && cp build_wasm/boost_voronoi.d.ts ./dist/build_wasm/boost_voronoi.d.ts && cp index.html ./dist/index.html && cp js/canvas_example.js ./dist/js/canvas_example.js",
         "copy_files2": "cp style.css ./dist/style.css"
     }
 }
