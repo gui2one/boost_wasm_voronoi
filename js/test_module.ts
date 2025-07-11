@@ -12,7 +12,7 @@ let canvas = document.createElement("canvas");
 
 let mouse_down = false;
 let mouse_moved = false;
-let add_sample = true;
+let enable_add_point = true;
 canvas.width = 512;
 canvas.height = 512;
 let ctx = canvas.getContext("2d");
@@ -66,14 +66,14 @@ canvas.addEventListener("mousemove", (e) => {
   mouse_moved = true;
   if (!mouse_down) return;
 
-  if (add_sample) {
+  if (enable_add_point) {
     add_point(e.offsetX, e.offsetY);
     init();
     setTimeout(() => {
-      add_sample = true;
+      enable_add_point = true;
     }, 30);
   }
 
   // reset
-  add_sample = false;
+  enable_add_point = false;
 });
