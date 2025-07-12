@@ -1,7 +1,7 @@
 import Voronoi from "./build_wasm/boost_voronoi.js";
 import { MemoryReader } from "./js/memory_reader";
 
-export interface VoronoiModule {
+export interface WasmMemory {
   HEAP8: Int8Array;
   HEAPU8: Uint8Array;
 
@@ -16,18 +16,10 @@ export interface VoronoiModule {
   HEAP64: BigInt64Array;
   HEAPU64: BigUint64Array;
   HEAPF64: Float64Array;
-  _malloc(size: number): number;
-  _free(ptr: number): void;
 
-  _build_diagram(ptr: number, len: number, bounds_ptr: number): number;
-  _find_contours(
-    pixels_data_ptr: number,
-    width: number,
-    height: number
-  ): number;
   // Add your own exports here
 }
-let voronoi = (await Voronoi()) as VoronoiModule;
+let voronoi = await Voronoi();
 console.log(typeof voronoi);
 console.log(voronoi);
 
@@ -264,18 +256,19 @@ function getMeshData(meshPtr: number): BoostDiagram {
 }
 function getMeshData2(meshPtr: number) {
   let reader = new MemoryReader(voronoi, meshPtr, true);
+
+  let val = reader.readSizeT(8);
+  console.log("val : ", val);
 }
 
 export function FindContours(image_data: ImageData): void {
   let pixelData = new Uint8Array(image_data.data.buffer);
   let pixels_data = uint8Array_to_wasm_array(pixelData);
-  console.log("Dimensions : ", image_data.width, image_data.height);
-  console.log("num _pixels : ", pixelData.length);
-  let contours = voronoi._find_contours(
+  let contours_ptr = voronoi._find_contours(
     pixels_data.ptr,
     image_data.width,
     image_data.height
   );
 
-  console.log(pixelData);
+  console.log(contours_ptr);
 }
