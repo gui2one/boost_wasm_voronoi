@@ -57,6 +57,16 @@ function float32Array_to_wasm_array(array: Float32Array): {
   return { ptr, len: array.length };
 }
 
+function uint8Array_to_wasm_array(array: Uint8Array): {
+  ptr: number;
+  len: number;
+} {
+  const bytes = array.length * array.BYTES_PER_ELEMENT;
+  const ptr = voronoi._malloc(bytes);
+  voronoi.HEAP8.set(array, ptr / 1); // divide by array.BYTES_PER_ELEMENT ?!!
+  return { ptr, len: array.length };
+}
+
 export function BuildDiagram(
   _sites: Vertex[],
   _bounds?: number[]
@@ -224,9 +234,16 @@ function getMeshData(meshPtr: number): BoostDiagram {
   };
 }
 
-// init();
+export function FindContours(image_data: ImageData): void {
+  let pixelData = new Uint8Array(image_data.data.buffer);
+  let pixels_data = uint8Array_to_wasm_array(pixelData);
+  console.log("Dimensions : ", image_data.width, image_data.height);
+  console.log("num _pixels : ", pixelData.length);
+  let contours = voronoi._find_contours(
+    pixels_data.ptr,
+    image_data.width,
+    image_data.height
+  );
 
-// document.addEventListener("click", () => {
-//   console.clear();
-//   init();
-// });
+  console.log(pixelData);
+}

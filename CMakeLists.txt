@@ -57,7 +57,8 @@ target_link_options(
     "-sASSERTIONS=2"
     "-sENVIRONMENT=web"
     "-sINITIAL_MEMORY=64MB"
-    "-sEXPORTED_FUNCTIONS=_malloc,_free, _build_diagram"
+    "-sNO_DISABLE_EXCEPTION_CATCHING"
+    "-sEXPORTED_FUNCTIONS=_malloc,_free, _build_diagram, _find_contours"
     "-sEXPORTED_RUNTIME_METHODS=['ccall','cwrap','getValue','setValue']"
 )
 

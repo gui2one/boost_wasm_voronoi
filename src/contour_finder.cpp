@@ -2,27 +2,41 @@
 
 extern "C" {
 EMSCRIPTEN_KEEPALIVE
-std::vector<std::vector<cv::Point>>
-process_alpha_contours(uint8_t *pixelData, int width, int height) {
-  // Create cv::Mat from raw RGBA buffer
-  cv::Mat image(height, width, CV_8UC4, pixelData);
+Contour *find_contours(uint8_t *pixelData, size_t width, size_t height) {
+  std::cout << "width :" << width << "\nheight :" << height << std::endl;
 
-  // Extract alpha channel
+  cv::Mat rgba(height, width, CV_8UC4, pixelData);
+
+  // Split RGBA channels
   std::vector<cv::Mat> channels;
-  cv::split(image, channels); // channels[3] is alpha
+  cv::split(rgba, channels); // channels[3] is alpha
 
-  // Threshold alpha to get a binary mask
+  // Threshold the alpha channel to create a binary mask
   cv::Mat binary;
-  cv::threshold(channels[3], binary, 0, 255, cv::THRESH_BINARY);
+  cv::threshold(channels[0], binary, 0, 255, cv::THRESH_BINARY);
 
   // Find contours
   std::vector<std::vector<cv::Point>> contours;
   cv::findContours(binary, contours, cv::RETR_EXTERNAL,
                    cv::CHAIN_APPROX_SIMPLE);
 
-  // Log how many contours were found
-  printf("Found %zu contour(s)\n", contours.size());
+  for (const auto &contour : contours) {
+    printf("Contour:\n");
+    for (const auto &pt : contour) {
+      printf("  (%d, %d)\n", pt.x, pt.y);
+    }
+  }
 
-  return contours;
+  Contour *result = new Contour[contours.size()];
+  for (size_t i = 0; i < contours.size(); i++) {
+    result[i].num_pts = contours[i].size();
+    result[i].pts = new ContourVertex[result[i].num_pts];
+    for (size_t j = 0; j < contours[i].size(); j++) {
+      result[i].pts[j].x = contours[i][j].x;
+      result[i].pts[j].y = contours[i][j].y;
+    }
+  }
+  printf("Found %zu contour(s)\n", contours.size());
+  return result;
 }
 }

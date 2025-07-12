@@ -4,9 +4,18 @@
 
 #include "pch.hpp"
 
+struct ContourVertex {
+  double x;
+  double y;
+};
+
+struct Contour {
+  size_t num_pts;
+  ContourVertex *pts;
+};
+
 extern "C" {
 EMSCRIPTEN_KEEPALIVE
-std::vector<std::vector<cv::Point>>
-process_alpha_contours(uint8_t *pixelData, int width, int height);
+Contour *find_contours(uint8_t *pixelData, size_t width, size_t height);
 }
 #endif // CONTOUR_FINDER_H
