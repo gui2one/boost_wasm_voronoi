@@ -1,6 +1,35 @@
 import Voronoi from "./build_wasm/boost_voronoi.js";
 import { MemoryReader } from "./js/memory_reader";
-let voronoi = await Voronoi();
+
+export interface VoronoiModule {
+  HEAP8: Int8Array;
+  HEAPU8: Uint8Array;
+
+  HEAP16: Int16Array;
+  HEAPU16: Uint16Array;
+  HEAPF16: Float16Array;
+
+  HEAP32: Int32Array;
+  HEAPU32: Uint32Array;
+  HEAPF32: Float32Array;
+
+  HEAP64: BigInt64Array;
+  HEAPU64: BigUint64Array;
+  HEAPF64: Float64Array;
+  _malloc(size: number): number;
+  _free(ptr: number): void;
+
+  _build_diagram(ptr: number, len: number, bounds_ptr: number): number;
+  _find_contours(
+    pixels_data_ptr: number,
+    width: number,
+    height: number
+  ): number;
+  // Add your own exports here
+}
+let voronoi = (await Voronoi()) as VoronoiModule;
+console.log(typeof voronoi);
+console.log(voronoi);
 
 export type BoostDiagram = {
   vertices: Vertex[];
@@ -100,16 +129,16 @@ export function BuildDiagram(
     bounds_c_array.ptr
   );
 
-  // let mem_reader = new MemoryReader(voronoi.HEAPU32.buffer, diagram);
-  // let num_vertices = mem_reader.readSizeT(0);
-  // let num_edges = mem_reader.readSizeT(4);
-  // let num_cells = mem_reader.readSizeT(8);
-  // console.log("num vertices : ", num_vertices);
-  // console.log("num edges :", num_edges);
-  // console.log("num cells :", num_cells);
+  let mem_reader = new MemoryReader(voronoi, diagram);
+  let num_vertices = mem_reader.readSizeT(0);
+  let num_edges = mem_reader.readSizeT(4);
+  let num_cells = mem_reader.readSizeT(8);
+  console.log("num vertices : ", num_vertices);
+  console.log("num edges :", num_edges);
+  console.log("num cells :", num_cells);
 
   let data = getMeshData(diagram);
-
+  let data2 = getMeshData2(diagram);
   // Free memory
   voronoi._free(coords_c_array.ptr);
 
@@ -232,6 +261,9 @@ function getMeshData(meshPtr: number): BoostDiagram {
     edges,
     cells,
   };
+}
+function getMeshData2(meshPtr: number) {
+  let reader = new MemoryReader(voronoi, meshPtr, true);
 }
 
 export function FindContours(image_data: ImageData): void {
