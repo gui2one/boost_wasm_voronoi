@@ -16,7 +16,7 @@ async function init() {
   });
   document.body.appendChild(app.canvas);
 
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 100; i++) {
     points.push({
       x: Math.random() * app.screen.width,
       y: Math.random() * app.screen.height,

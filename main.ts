@@ -121,14 +121,6 @@ export function BuildDiagram(
     bounds_c_array.ptr
   );
 
-  let mem_reader = new MemoryReader(voronoi, diagram);
-  let num_vertices = mem_reader.readSizeT(0);
-  let num_edges = mem_reader.readSizeT(4);
-  let num_cells = mem_reader.readSizeT(8);
-  console.log("num vertices : ", num_vertices);
-  console.log("num edges :", num_edges);
-  console.log("num cells :", num_cells);
-
   let data = getMeshData(diagram);
   let data2 = getMeshData2(diagram);
   // Free memory
