@@ -3,4 +3,5 @@ build_wasm/*
 httpdocs/
 node_modules/
 preview_dist/
+env/
 
