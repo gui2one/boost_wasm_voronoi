@@ -19,6 +19,8 @@ add_executable(${PROJECT_NAME}
     src/main.cpp
     src/voronoi_diagram.cpp
     src/contour_finder.cpp
+    src/algorithms/PoissonDiscSampling.cpp
+    src/algorithms/RNDGenerator.cpp
 )
 target_precompile_headers(${PROJECT_NAME} PUBLIC src/pch.hpp)
 

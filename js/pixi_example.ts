@@ -13,6 +13,7 @@ let points: Vertex[] = [];
 async function init() {
   await app.init({
     preference: "webgpu",
+    antialias: true,
   });
   document.body.appendChild(app.canvas);
 
