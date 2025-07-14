@@ -19,6 +19,10 @@ typedef point_data<coordinate_type> Point;
 typedef segment_data<coordinate_type> Segment;
 namespace gui2one {
 
+template <typename T> struct WasmArray {
+  size_t length;
+  T *data;
+};
 struct Vertex {
   double x;
   double y;
@@ -43,10 +47,16 @@ struct Diagram {
   Cell *cells;
 };
 
+struct Diagram2 {
+  WasmArray<Vertex> vertices;
+  WasmArray<Edge> edges;
+  WasmArray<Cell> cells;
+};
 extern "C" {
 // rect_type compute_bounding_rect(const std::vector<Point> &points);
 rect_type compute_bounding_rect(Vertex *points, int size);
 Diagram *build_diagram(float *points, size_t length, float *bounds);
+Diagram2 *build_diagram2(float *points, size_t length, float *bounds);
 }
 
 } // namespace gui2one

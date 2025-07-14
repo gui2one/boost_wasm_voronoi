@@ -20,8 +20,8 @@ export interface WasmMemory {
   // Add your own exports here
 }
 let voronoi = await Voronoi();
-console.log(typeof voronoi);
-console.log(voronoi);
+// console.log(typeof voronoi);
+// console.log(voronoi);
 
 export type BoostDiagram = {
   vertices: Vertex[];
@@ -121,10 +121,19 @@ export function BuildDiagram(
     bounds_c_array.ptr
   );
 
+  const diagram2 = voronoi._build_diagram2(
+    coords_c_array.ptr,
+    coords_c_array.len,
+    bounds_c_array.ptr
+  );
+
   let data = getMeshData(diagram);
-  let data2 = getMeshData2(diagram);
+  let data2 = getMeshData2(diagram2);
   // Free memory
+  voronoi._free(diagram);
+  voronoi._free(diagram2);
   voronoi._free(coords_c_array.ptr);
+  voronoi._free(bounds_c_array.ptr);
 
   return data;
 }
@@ -246,11 +255,87 @@ function getMeshData(meshPtr: number): BoostDiagram {
     cells,
   };
 }
-function getMeshData2(meshPtr: number) {
-  let reader = new MemoryReader(voronoi, meshPtr, true);
 
-  let val = reader.readSizeT(8);
-  console.log("val : ", val);
+function read_wasm_array_at_offset<T>(
+  base_ptr: number,
+  offset: number,
+  item_size_in_bytes: number,
+  read_fn: (reader: MemoryReader, offset: number) => T
+): T[] {
+  const reader = new MemoryReader(voronoi, base_ptr, true);
+  const length = reader.readSizeT(offset);
+  const data_ptr = reader.readUint32(offset + 4);
+  const dataReader = new MemoryReader(voronoi, data_ptr, true);
+
+  const result: T[] = [];
+  for (let i = 0; i < length; i++) {
+    const item_offset = i * item_size_in_bytes;
+    const item = read_fn(dataReader, item_offset);
+    result.push(item);
+  }
+
+  return result;
+}
+
+function getMeshData2(meshPtr: number) {
+  function readVertex(reader: MemoryReader, offset: number) {
+    const x = reader.readFloat64(offset);
+    const y = reader.readFloat64(offset + 8);
+    return { x, y };
+  }
+
+  function readEdge(reader: MemoryReader, offset: number) {
+    return {
+      vertex0: readVertex(reader, offset), // 0 - 15
+      vertex1: readVertex(reader, offset + 16), // 16 - 31
+    };
+  }
+
+  function readCell(reader: MemoryReader, offset: number) {
+    const source_index = reader.readUint32(offset);
+    const num_vertices = reader.readUint32(offset + 4);
+    const vertices_ptr = reader.readUint32(offset + 8);
+
+    const vertex_reader = new MemoryReader(voronoi, vertices_ptr, true);
+    let vertices: { x: number; y: number }[] = [];
+    for (let i = 0; i < num_vertices; i++) {
+      let vtx = readVertex(vertex_reader, i * 16);
+      vertices.push(vtx);
+    }
+    return {
+      source_index,
+      num_vertices,
+      vertices,
+    };
+  }
+
+  // Now read the WasmArray<T> structs
+  const diagramPtr = meshPtr; // pointer to Diagram2
+
+  const offset_vertices = 0;
+  const offset_edges = offset_vertices + 8;
+  const offset_cells = offset_edges + 8;
+
+  const vertices = read_wasm_array_at_offset(
+    diagramPtr,
+    offset_vertices,
+    16,
+    readVertex
+  );
+  const edges = read_wasm_array_at_offset(
+    diagramPtr,
+    offset_edges,
+    32,
+    readEdge
+  );
+  const cells = read_wasm_array_at_offset(
+    diagramPtr,
+    offset_cells,
+    12,
+    readCell
+  );
+
+  console.log(vertices, edges, cells);
 }
 
 export function FindContours(image_data: ImageData): void {
@@ -262,5 +347,5 @@ export function FindContours(image_data: ImageData): void {
     image_data.height
   );
 
-  console.log(contours_ptr);
+  // console.log(contours_ptr);
 }

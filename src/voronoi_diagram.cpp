@@ -60,22 +60,23 @@ void clip_infinite_edge(const voronoi_edge<double> &edge,
     origin.y((p1.y() + p2.y()) * 0.5);
     direction.x(p1.y() - p2.y());
     direction.y(p2.x() - p1.x());
-  } // else {
-    //  origin = cell1.contains_segment() ? retrieve_point(cell2)
-    //                                    : retrieve_point(cell1);
-    //  segment_type segment = cell1.contains_segment() ?
-    //  retrieve_segment(cell1)
-    //                                                  :
-    //                                                  retrieve_segment(cell2);
-    //  coordinate_type dx = high(segment).x() - low(segment).x();
-    //  coordinate_type dy = high(segment).y() - low(segment).y();
-    //  if ((low(segment) == origin) ^ cell1.contains_point()) {
-    //    direction.x(dy);
-    //    direction.y(-dx);
-    //  } else {
-    //    direction.x(-dy);
-    //    direction.y(dx);
-    //  }
+  }
+  // else {
+  //  origin = cell1.contains_segment() ? retrieve_point(cell2)
+  //                                    : retrieve_point(cell1);
+  //  segment_type segment = cell1.contains_segment() ?
+  //  retrieve_segment(cell1)
+  //                                                  :
+  //                                                  retrieve_segment(cell2);
+  //  coordinate_type dx = high(segment).x() - low(segment).x();
+  //  coordinate_type dy = high(segment).y() - low(segment).y();
+  //  if ((low(segment) == origin) ^ cell1.contains_point()) {
+  //    direction.x(dy);
+  //    direction.y(-dx);
+  //  } else {
+  //    direction.x(-dy);
+  //    direction.y(dx);
+  //  }
   //}
   coordinate_type side = xh(brect_) - xl(brect_);
   coordinate_type koef =
@@ -126,15 +127,12 @@ Diagram *build_diagram(float *fpoints, size_t len, float *bounds) {
     diagram->vertices[i] = my_vertex;
   }
 
-  // rect_type brect_2 =
-  //     compute_bounding_rect(diagram->vertices, diagram->num_vertices);
-
   rect_type brect_2 = boost::polygon::construct<rect_type>(
       bounds[0] - 5000.0f, bounds[1] - 5000.0f, bounds[2] + 5000.0f,
       bounds[3] + 5000.0f);
 
   for (size_t i = 0; i < vd.num_cells(); i++) {
-    // std::cout << "cell: " << i << std::endl;
+
     const auto &cell = vd.cells()[i];
     Cell my_cell;
     std::vector<Vertex> vertices_vector;
@@ -204,6 +202,117 @@ Diagram *build_diagram(float *fpoints, size_t len, float *bounds) {
   // std::cout << "num vertices (cpp): " << diagram->num_vertices << std::endl;
   // std::cout << "num edges (cpp): " << diagram->num_edges << std::endl;
   // std::cout << "num cells (cpp): " << diagram->num_cells << std::endl;
+  // std::cout << "bounds (cpp): " << bounds[0] << "," << bounds[1] << ","
+  //           << bounds[2] << "," << bounds[3] << std::endl;
+
+  return diagram;
+}
+
+Diagram2 *build_diagram2(float *fpoints, size_t len, float *bounds) {
+  std::vector<Point> sites;
+  std::vector<Segment> segments;
+  for (size_t i = 0; i + 1 < len; i += 2) {
+    sites.push_back({fpoints[i], fpoints[i + 1]});
+  }
+
+  VD vd;
+  construct_voronoi(sites.begin(), sites.end(), segments.begin(),
+                    segments.end(), &vd);
+
+  Diagram2 *diagram = new Diagram2();
+
+  diagram->cells.length = vd.num_cells();
+  diagram->cells.data = new Cell[vd.num_cells()];
+
+  diagram->vertices.length = vd.num_vertices();
+  diagram->vertices.data = new Vertex[vd.num_vertices()];
+
+  diagram->edges.length = vd.num_edges();
+  diagram->edges.data = new Edge[vd.num_edges()];
+
+  for (size_t i = 0; i < diagram->vertices.length; i++) {
+    Vertex my_vertex;
+    my_vertex.x = vd.vertices()[i].x();
+    my_vertex.y = vd.vertices()[i].y();
+    diagram->vertices.data[i] = my_vertex;
+    // std::cout << my_vertex.x << "," << my_vertex.y << std::endl;
+  }
+
+  rect_type brect_2 = boost::polygon::construct<rect_type>(
+      bounds[0] - 5000.0f, bounds[1] - 5000.0f, bounds[2] + 5000.0f,
+      bounds[3] + 5000.0f);
+
+  for (size_t i = 0; i < vd.num_cells(); i++) {
+
+    const auto &cell = vd.cells()[i];
+    Cell my_cell;
+    std::vector<Vertex> vertices_vector;
+
+    const auto *edge = cell.incident_edge();
+    const auto *start = edge;
+
+    do {
+
+      edge = edge->next();
+      if (edge->is_infinite()) {
+        std::vector<point_data<double>> clipped_edge;
+        clip_infinite_edge(*edge, clipped_edge, brect_2, sites);
+        // Add both endpoints of clipped infinite edge
+        for (const auto &pt : clipped_edge) {
+          vertices_vector.push_back({pt.x(), pt.y()});
+        }
+      } else {
+        if (edge->vertex0()) {
+          vertices_vector.push_back(
+              {edge->vertex0()->x(), edge->vertex0()->y()});
+        }
+        // You can also choose to add edge->vertex1() for completeness
+      }
+
+    } while (edge != start);
+
+    my_cell.source_index = cell.source_index();
+    my_cell.num_vertices = vertices_vector.size();
+    my_cell.vertices = new Vertex[vertices_vector.size()];
+    for (size_t j = 0; j < vertices_vector.size(); j++) {
+      my_cell.vertices[j] = vertices_vector[j];
+    }
+
+    diagram->cells.data[i] = my_cell;
+  }
+
+  for (size_t i = 0; i < vd.num_edges(); i++) {
+    Edge my_edge;
+
+    if (vd.edges()[i].is_infinite()) {
+      std::vector<point_data<double>> clipped_edge;
+
+      clip_infinite_edge(vd.edges()[i], clipped_edge, brect_2, sites);
+      my_edge.vertex0.x = clipped_edge[0].x();
+      my_edge.vertex0.y = clipped_edge[0].y();
+      my_edge.vertex1.x = clipped_edge[1].x();
+      my_edge.vertex1.y = clipped_edge[1].y();
+
+    } else {
+
+      const auto &vtx0 = vd.edges()[i].vertex0();
+      const auto &vtx1 = vd.edges()[i].vertex1();
+      my_edge.vertex0.x = vtx0->x();
+      my_edge.vertex0.y = vtx0->y();
+
+      my_edge.vertex1.x = vtx1->x();
+      my_edge.vertex1.y = vtx1->y();
+
+      double dist = (vtx1->x() - vtx0->x()) * (vtx1->x() - vtx0->x()) +
+                    (vtx1->y() - vtx0->y()) * (vtx1->y() - vtx0->y());
+    }
+
+    diagram->edges.data[i] = my_edge;
+  }
+
+  std::cout << "num vertices (cpp): " << diagram->vertices.length << std::endl;
+  std::cout << "num edges (cpp): " << diagram->edges.length << std::endl;
+  std::cout << "num cells (cpp): " << diagram->cells.length << std::endl;
   // std::cout << "bounds (cpp): " << bounds[0] << "," << bounds[1] << ","
   //           << bounds[2] << "," << bounds[3] << std::endl;
 

@@ -27,7 +27,21 @@ STD_TYPES = [
 ]
 
 
-def get_struct_members(parser, source_code_bytes, struct_name):
+class struct_data:
+    def __init__(self, name, members):
+        self.name = name
+        self.members = members
+
+    def __str__(self):
+        return f"<Struct: {self.name} Members: {self.members}>"
+
+    def __eq__(self, other):
+        if not isinstance(other, struct_data):
+            return False
+        return self.name == other.name and self.members == other.members
+
+
+def get_struct_members(parser, source_code_bytes, struct_name, result_list=None):
     tree = parser.parse(source_code_bytes)
     root_node = tree.root_node
 
@@ -63,6 +77,9 @@ def get_struct_members(parser, source_code_bytes, struct_name):
             else:
                 result = walk(child)
                 if result:
+                    struct = struct_data(struct_name, result)
+                    if not struct in result_list:  # avoid duplicate struct
+                        result_list.append(struct_data(struct_name, result))
                     return result
         return None
 
@@ -76,17 +93,24 @@ def main(file_path, struct_name):
 
     source_code = Path(file_path).open("rb").read()
 
-    members = get_struct_members(parser, source_code, struct_name)
+    result_data: list[struct_data] = []
+    members = get_struct_members(parser, source_code, struct_name, result_data)
 
     if members is None:
         print(f"Struct '{struct_name}' not found.")
     else:
-        print(f"Struct '{struct_name}' has the following members:")
+        # print(f"Struct '{struct_name}' has the following members:")
+        # result_data.append(struct_data(struct_name, members))
         for t, n in members:
             if t in STD_TYPES:
-                print(f"  {t} {n}")
+                # print(f"  {t} {n}")
+                pass
             else:
-                print(f"  {t}(struct) {n}")
+                members = get_struct_members(parser, source_code, t, result_data)
+                # print(f"  {t}(struct) {n}")
+
+    for item in result_data:
+        print(item)
 
 
 if __name__ == "__main__":

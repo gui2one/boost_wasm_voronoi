@@ -3,7 +3,7 @@
 extern "C" {
 EMSCRIPTEN_KEEPALIVE
 Contour *find_contours(uint8_t *pixelData, size_t width, size_t height) {
-  std::cout << "width :" << width << "\nheight :" << height << std::endl;
+  // std::cout << "width :" << width << "\nheight :" << height << std::endl;
 
   cv::Mat rgba(height, width, CV_8UC4, pixelData);
 
@@ -20,12 +20,12 @@ Contour *find_contours(uint8_t *pixelData, size_t width, size_t height) {
   cv::findContours(binary, contours, cv::RETR_EXTERNAL,
                    cv::CHAIN_APPROX_SIMPLE);
 
-  for (const auto &contour : contours) {
-    printf("Contour:\n");
-    for (const auto &pt : contour) {
-      printf("  (%d, %d)\n", pt.x, pt.y);
-    }
-  }
+  // for (const auto &contour : contours) {
+  //   printf("Contour:\n");
+  //   for (const auto &pt : contour) {
+  //     printf("  (%d, %d)\n", pt.x, pt.y);
+  //   }
+  // }
 
   Contour *result = new Contour[contours.size()];
   for (size_t i = 0; i < contours.size(); i++) {
@@ -36,7 +36,7 @@ Contour *find_contours(uint8_t *pixelData, size_t width, size_t height) {
       result[i].pts[j].y = contours[i][j].y;
     }
   }
-  printf("Found %zu contour(s)\n", contours.size());
+  // printf("Found %zu contour(s)\n", contours.size());
   return result;
 }
 }
