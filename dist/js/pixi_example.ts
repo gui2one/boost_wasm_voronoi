@@ -14,23 +14,24 @@ async function init() {
   await app.init({
     preference: "webgpu",
     antialias: true,
+    backgroundColor: "blue",
   });
   document.body.appendChild(app.canvas);
 
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 3000; i++) {
     points.push({
       x: Math.random() * app.screen.width,
       y: Math.random() * app.screen.height,
     });
   }
 
-  app.canvas.addEventListener("click", (e) => {
-    points.push({
-      x: e.offsetX,
-      y: e.offsetY,
-    });
-    build_diagram(app);
-  });
+  // app.canvas.addEventListener("click", (e) => {
+  //   points.push({
+  //     x: e.offsetX,
+  //     y: e.offsetY,
+  //   });
+  //   build_diagram(app);
+  // });
 
   build_diagram(app);
   contours_test();
@@ -50,25 +51,42 @@ function build_diagram(app: Application) {
 function display_cells(app: Application, diagram: BoostDiagram) {
   app.stage.removeChildren();
   for (let cell of diagram.cells) {
+    // let clockwise = isClockwise(cell.vertices);
+    // if (!clockwise) {
+    //   cell.vertices.reverse();
+    // }
     let g = new CellGraphics();
     g.interactive = true;
     g.cell_id = cell.source_index;
+    g.setFillStyle({ color: 0xffffff, alpha: 1.0 });
     g.setStrokeStyle({ width: 1, color: 0x000000 });
     g.poly(cell.vertices.map((v) => new Point(v.x, v.y)))
       .fill()
       .stroke();
+
     app.stage.addChild(g);
 
-    g.addEventListener("mouseover", (e: Event) => {
+    g.addEventListener("mousedown", (e: Event) => {
       let g = e.target as CellGraphics;
       g.tint = 0xff0000;
+      console.log(cell);
     });
 
-    g.addEventListener("mouseout", (e: Event) => {
+    g.addEventListener("mouseup, mouseout", (e: Event) => {
       let g = e.target as CellGraphics;
       g.tint = 0xffffff;
     });
   }
+}
+
+function isClockwise(pts: Vertex[]) {
+  let sum = 0;
+  for (let i = 0; i < pts.length; i++) {
+    const p1 = pts[i];
+    const p2 = pts[(i + 1) % pts.length];
+    sum += (p2.x - p1.x) * (p2.y + p1.y);
+  }
+  return sum > 0;
 }
 
 function contours_test() {

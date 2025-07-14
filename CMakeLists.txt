@@ -1,5 +1,17 @@
 cmake_minimum_required(VERSION 3.13)
 
+include(FetchContent)
+function(FetchDependencyAndMakeAvailable NAME URL TAG)
+  FetchContent_Declare(
+    ${NAME}
+    GIT_REPOSITORY ${URL}
+    GIT_TAG        ${TAG}
+    GIT_PROGRESS TRUE
+  )
+  FetchContent_MakeAvailable(${NAME})
+endfunction()
+
+
 
 set (CMAKE_CXX_STANDARD 20)
 set(OpenCV_DIR "D:\\dev\\opencv\\build_emscripten\\install")  # or path to OpenCVConfig.cmake

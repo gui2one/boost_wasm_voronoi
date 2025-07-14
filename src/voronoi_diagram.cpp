@@ -128,8 +128,8 @@ Diagram *build_diagram(float *fpoints, size_t len, float *bounds) {
   }
 
   rect_type brect_2 = boost::polygon::construct<rect_type>(
-      bounds[0] - 5000.0f, bounds[1] - 5000.0f, bounds[2] + 5000.0f,
-      bounds[3] + 5000.0f);
+      bounds[0] - 500.0f, bounds[1] - 500.0f, bounds[2] + 500.0f,
+      bounds[3] + 500.0f);
 
   for (size_t i = 0; i < vd.num_cells(); i++) {
 
