@@ -39,15 +39,6 @@ struct Cell {
 };
 
 struct Diagram {
-  size_t num_vertices;
-  size_t num_edges;
-  size_t num_cells;
-  Vertex *vertices;
-  Edge *edges;
-  Cell *cells;
-};
-
-struct Diagram2 {
   WasmArray<Vertex> vertices;
   WasmArray<Edge> edges;
   WasmArray<Cell> cells;
@@ -55,8 +46,8 @@ struct Diagram2 {
 extern "C" {
 // rect_type compute_bounding_rect(const std::vector<Point> &points);
 rect_type compute_bounding_rect(Vertex *points, int size);
+
 Diagram *build_diagram(float *points, size_t length, float *bounds);
-Diagram2 *build_diagram2(float *points, size_t length, float *bounds);
 }
 
 } // namespace gui2one

@@ -121,21 +121,14 @@ export function BuildDiagram(
     bounds_c_array.ptr
   );
 
-  const diagram2 = voronoi._build_diagram2(
-    coords_c_array.ptr,
-    coords_c_array.len,
-    bounds_c_array.ptr
-  );
-
-  let data = getMeshData(diagram);
-  let data2 = getMeshData2(diagram2);
+  let data2 = getMeshData(diagram);
   // Free memory
+
   voronoi._free(diagram);
-  voronoi._free(diagram2);
   voronoi._free(coords_c_array.ptr);
   voronoi._free(bounds_c_array.ptr);
 
-  return data;
+  return data2;
 }
 
 export function display_vertices(
@@ -182,80 +175,6 @@ export function display_cells(cells: Cell[], ctx: CanvasRenderingContext2D) {
   }
 }
 
-function getMeshData(meshPtr: number): BoostDiagram {
-  /*
-  BEWARE : because I am using WASM 32bit version, Array pointers are 32 bits
-  */
-
-  const HEAPU32 = voronoi.HEAPU32;
-  const HEAPF64 = voronoi.HEAPF64;
-
-  const baseU32 = meshPtr >> 2;
-
-  const num_vertices = HEAPU32[baseU32 + 0];
-  const num_edges = HEAPU32[baseU32 + 1];
-  const num_cells = HEAPU32[baseU32 + 2];
-
-  const verticesPtr = HEAPU32[baseU32 + 3];
-  const edgesPtr = HEAPU32[baseU32 + 4];
-  const cellsPtr = HEAPU32[baseU32 + 5];
-
-  // Read top-level vertices
-  const vertices: Vertex[] = [];
-  const vertexBase = verticesPtr >> 3;
-  for (let i = 0; i < num_vertices; ++i) {
-    const base = vertexBase + i * 2;
-    vertices.push({
-      x: HEAPF64[base],
-      y: HEAPF64[base + 1],
-    });
-  }
-
-  // Read edges
-  const edges: Edge[] = [];
-  const edgeSizeInDoubles = 4; // 2 Vertex structs, each with x and y (2 doubles)
-  const edgeBase = edgesPtr >> 3;
-  for (let i = 0; i < num_edges; ++i) {
-    const base = edgeBase + i * edgeSizeInDoubles;
-    edges.push({
-      vertex0: { x: HEAPF64[base], y: HEAPF64[base + 1] },
-      vertex1: { x: HEAPF64[base + 2], y: HEAPF64[base + 3] },
-    });
-  }
-
-  // Read cells
-  const cells: Cell[] = [];
-  const cellSizeInU32 = 3; // size_t source_index + size_t num_vertices + Vertex* pointer
-  const cellBase = cellsPtr >> 2;
-  for (let i = 0; i < num_cells; ++i) {
-    const offset = cellBase + i * cellSizeInU32;
-    const source_index = HEAPU32[offset];
-    const num_cell_vertices = HEAPU32[offset + 1];
-    const cellVerticesPtr = HEAPU32[offset + 2];
-
-    const verts: Vertex[] = [];
-    const vertexPtr64 = cellVerticesPtr >> 3;
-    for (let j = 0; j < num_cell_vertices; ++j) {
-      const base = vertexPtr64 + j * 2;
-      verts.push({
-        x: HEAPF64[base],
-        y: HEAPF64[base + 1],
-      });
-    }
-
-    cells.push({
-      source_index,
-      vertices: verts,
-    });
-  }
-
-  return {
-    vertices,
-    edges,
-    cells,
-  };
-}
-
 function read_wasm_array_at_offset<T>(
   base_ptr: number,
   offset: number,
@@ -277,7 +196,7 @@ function read_wasm_array_at_offset<T>(
   return result;
 }
 
-function getMeshData2(meshPtr: number) {
+function getMeshData(meshPtr: number): BoostDiagram {
   function readVertex(reader: MemoryReader, offset: number) {
     const x = reader.readFloat64(offset);
     const y = reader.readFloat64(offset + 8);
@@ -335,7 +254,9 @@ function getMeshData2(meshPtr: number) {
     readCell
   );
 
-  console.log(vertices, edges, cells);
+  // console.log(vertices, edges, cells);
+
+  return { vertices, edges, cells };
 }
 
 export function FindContours(image_data: ImageData): void {
