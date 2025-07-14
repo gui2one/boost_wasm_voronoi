@@ -9,6 +9,7 @@ function(FetchDependencyAndMakeAvailable NAME URL TAG)
     GIT_PROGRESS TRUE
   )
   FetchContent_MakeAvailable(${NAME})
+
 endfunction()
 
 
@@ -24,7 +25,7 @@ add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 set(INCLUDE_DIRS
     D:/Boost/include/boost-1_88
     C:/Users/Sprayfly/AppData/Local/emsdk/upstream/emscripten
-    ${CMAKE_CURRENT_BINARY_DIR}/_deps/glm-src/
+    # ${CMAKE_CURRENT_BINARY_DIR}/_deps/glm-src/
     "${OpenCV_DIR}\\include\\opencv4")
 include_directories(
     ${INCLUDE_DIRS}
@@ -39,6 +40,11 @@ add_executable(${PROJECT_NAME}
 )
 
 FetchDependencyAndMakeAvailable(glm "https://github.com/g-truc/glm.git" "2d4c4b4dd31fde06cfffad7915c2b3006402322f")
+
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+    $<TARGET_PROPERTY:glm,INTERFACE_INCLUDE_DIRECTORIES>
+)  
 
 target_precompile_headers(${PROJECT_NAME} PUBLIC src/pch.hpp)
 
