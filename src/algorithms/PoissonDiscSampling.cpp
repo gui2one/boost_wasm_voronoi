@@ -33,7 +33,7 @@ std::vector<glm::vec2> GeneratePoints(glm::vec2 grid_size, float radius,
 
   // bail early : there are issues when grid size is 1/1
   if (cols < 2 || rows < 2) {
-    LOG_INFO("Grid Size : {} {}", cols, rows);
+    // LOG_INFO("Grid Size : {} {}", cols, rows);
     return std::vector<glm::vec2>();
   }
 

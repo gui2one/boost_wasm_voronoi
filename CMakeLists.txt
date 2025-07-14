@@ -9,10 +9,13 @@ project(boost_voronoi)
 
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
-include_directories(
+set(INCLUDE_DIRS
     D:/Boost/include/boost-1_88
     C:/Users/Sprayfly/AppData/Local/emsdk/upstream/emscripten
-    "${OpenCV_DIR}\\include\\opencv4"
+    vendor/glm
+    "${OpenCV_DIR}\\include\\opencv4")
+include_directories(
+    ${INCLUDE_DIRS}
 )
 
 add_executable(${PROJECT_NAME}
@@ -25,7 +28,9 @@ add_executable(${PROJECT_NAME}
 target_precompile_headers(${PROJECT_NAME} PUBLIC src/pch.hpp)
 
 target_include_directories(${PROJECT_NAME} PUBLIC "${OpenCV_DIR}\\include\\opencv4")
-target_link_directories(${PROJECT_NAME} PUBLIC "${OpenCV_DIR}\\lib")
+target_link_directories(${PROJECT_NAME} PUBLIC 
+    ${OpenCV_DIR}\\lib
+)
 target_link_libraries(${PROJECT_NAME} libopencv_world.a)
 # Detect compiler and disable warnings accordingly
 if(MSVC)

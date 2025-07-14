@@ -13,10 +13,11 @@ let points: Vertex[] = [];
 async function init() {
   await app.init({
     preference: "webgpu",
+    antialias: true,
   });
   document.body.appendChild(app.canvas);
 
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 3; i++) {
     points.push({
       x: Math.random() * app.screen.width,
       y: Math.random() * app.screen.height,

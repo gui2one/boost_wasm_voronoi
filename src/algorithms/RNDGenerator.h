@@ -1,36 +1,34 @@
 #pragma once
+#include "../pch.hpp"
 #include <iostream>
-
-#include <random>
-class RNDGenerator
-{
+class RNDGenerator {
 public:
-    std::mt19937 gen;
+  std::mt19937 gen;
 
 public:
-    static RNDGenerator *GetInstance();
+  static RNDGenerator *GetInstance();
 
-    RNDGenerator(const RNDGenerator &other) = delete;
-    void operator=(const RNDGenerator &other) = delete;
+  RNDGenerator(const RNDGenerator &other) = delete;
+  void operator=(const RNDGenerator &other) = delete;
 
-    void Seed(int seed);
-    float Float();
-    float Float(float max);
-    float Float(float min, float max);
+  void Seed(int seed);
+  float Float();
+  float Float(float max);
+  float Float(float min, float max);
 
-    uint32_t Int();
-    uint32_t Int(uint32_t max);
-    uint32_t Int(uint32_t min, uint32_t max);
+  uint32_t Int();
+  uint32_t Int(uint32_t max);
+  uint32_t Int(uint32_t min, uint32_t max);
 
-    glm::vec3 Color();
+  glm::vec3 Color();
 
-    uint32_t GenerateEntityID();
+  uint32_t GenerateEntityID();
 
 private:
-    static RNDGenerator *s_Instance;
+  static RNDGenerator *s_Instance;
 
-    std::random_device rd;
+  std::random_device rd;
 
 protected:
-    RNDGenerator();
+  RNDGenerator();
 };

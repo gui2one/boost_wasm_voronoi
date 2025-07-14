@@ -17,7 +17,7 @@ async function init() {
   });
   document.body.appendChild(app.canvas);
 
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 300; i++) {
     points.push({
       x: Math.random() * app.screen.width,
       y: Math.random() * app.screen.height,
@@ -62,6 +62,7 @@ function display_cells(app: Application, diagram: BoostDiagram) {
     g.addEventListener("mouseover", (e: Event) => {
       let g = e.target as CellGraphics;
       g.tint = 0xff0000;
+      console.log(g.cell_id);
     });
 
     g.addEventListener("mouseout", (e: Event) => {
