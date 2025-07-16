@@ -161,8 +161,8 @@ Diagram *build_diagram(float *fpoints, size_t len, float *bounds) {
     } while (edge != start);
 
     my_cell.source_index = cell.source_index();
-    my_cell.num_vertices = vertices_vector.size();
-    my_cell.vertices = new Vertex[vertices_vector.size()];
+    my_cell.vertices.alloc(vertices_vector.size());
+
     for (size_t j = 0; j < vertices_vector.size(); j++) {
       my_cell.vertices[j] = vertices_vector[j];
     }

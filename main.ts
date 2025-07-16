@@ -29,6 +29,14 @@ export type BoostDiagram = {
   cells: Cell[];
 };
 
+export function JC_diagram() {
+  let ptr = voronoi._jvc_voronoi_example();
+  // let reader = new MemoryReader(voronoi, ptr, true);
+
+  console.log(ptr);
+  let vertices = read_wasm_array_at_offset(ptr, 0, 4, readVertex);
+  console.log(vertices);
+}
 export type Vertex = {
   x: number;
   y: number;
@@ -196,38 +204,39 @@ function read_wasm_array_at_offset<T>(
   return result;
 }
 
+function readVertex(reader: MemoryReader, offset: number) {
+  const x = reader.readFloat64(offset);
+  const y = reader.readFloat64(offset + 8);
+  return { x, y };
+}
+
+function readEdge(reader: MemoryReader, offset: number) {
+  return {
+    vertex0: readVertex(reader, offset), // 0 - 15
+    vertex1: readVertex(reader, offset + 16), // 16 - 31
+  };
+}
+
+function readCell(reader: MemoryReader, offset: number) {
+  const source_index = reader.readSizeT(offset);
+
+  const vertices_length = reader.readSizeT(offset + 4);
+  const vertices_data_ptr = reader.readUint32(offset + 8);
+
+  const vertexReader = new MemoryReader(voronoi, vertices_data_ptr, true);
+  const vertices: { x: number; y: number }[] = [];
+
+  for (let i = 0; i < vertices_length; i++) {
+    const vtx = readVertex(vertexReader, i * 16); // Vertex is 16 bytes
+    vertices.push(vtx);
+  }
+
+  return {
+    source_index,
+    vertices,
+  };
+}
 function getMeshData(meshPtr: number): BoostDiagram {
-  function readVertex(reader: MemoryReader, offset: number) {
-    const x = reader.readFloat64(offset);
-    const y = reader.readFloat64(offset + 8);
-    return { x, y };
-  }
-
-  function readEdge(reader: MemoryReader, offset: number) {
-    return {
-      vertex0: readVertex(reader, offset), // 0 - 15
-      vertex1: readVertex(reader, offset + 16), // 16 - 31
-    };
-  }
-
-  function readCell(reader: MemoryReader, offset: number) {
-    const source_index = reader.readUint32(offset);
-    const num_vertices = reader.readUint32(offset + 4);
-    const vertices_ptr = reader.readUint32(offset + 8);
-
-    const vertex_reader = new MemoryReader(voronoi, vertices_ptr, true);
-    let vertices: { x: number; y: number }[] = [];
-    for (let i = 0; i < num_vertices; i++) {
-      let vtx = readVertex(vertex_reader, i * 16);
-      vertices.push(vtx);
-    }
-    return {
-      source_index,
-      num_vertices,
-      vertices,
-    };
-  }
-
   // Now read the WasmArray<T> structs
   const diagramPtr = meshPtr; // pointer to Diagram2
 
@@ -254,7 +263,7 @@ function getMeshData(meshPtr: number): BoostDiagram {
     readCell
   );
 
-  // console.log(vertices, edges, cells);
+  console.log(vertices, edges, cells);
 
   return { vertices, edges, cells };
 }

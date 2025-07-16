@@ -2,7 +2,9 @@
 #ifndef VORONOI_DIAGRAM_H
 #define VORONOI_DIAGRAM_H
 
+#include "my_types.h"
 #include "pch.hpp"
+
 using boost::polygon::construct_voronoi;
 using boost::polygon::point_data;
 using boost::polygon::voronoi_cell;
@@ -19,30 +21,6 @@ typedef point_data<coordinate_type> Point;
 typedef segment_data<coordinate_type> Segment;
 namespace gui2one {
 
-template <typename T> struct WasmArray {
-  size_t length;
-  T *data;
-};
-struct Vertex {
-  double x;
-  double y;
-};
-
-struct Edge {
-  Vertex vertex0;
-  Vertex vertex1;
-};
-struct Cell {
-  size_t source_index;
-  size_t num_vertices;
-  Vertex *vertices;
-};
-
-struct Diagram {
-  WasmArray<Vertex> vertices;
-  WasmArray<Edge> edges;
-  WasmArray<Cell> cells;
-};
 extern "C" {
 // rect_type compute_bounding_rect(const std::vector<Point> &points);
 rect_type compute_bounding_rect(Vertex *points, int size);

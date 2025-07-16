@@ -1,7 +1,6 @@
 #include "contour_finder.h"
 
 extern "C" {
-EMSCRIPTEN_KEEPALIVE
 Contour *find_contours(uint8_t *pixelData, size_t width, size_t height) {
   // std::cout << "width :" << width << "\nheight :" << height << std::endl;
 

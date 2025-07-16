@@ -1,6 +1,12 @@
 import { Application, Graphics, Point } from "pixi.js";
 
-import { BoostDiagram, FindContours, BuildDiagram, Vertex } from "../main.js";
+import {
+  BoostDiagram,
+  FindContours,
+  BuildDiagram,
+  Vertex,
+  JC_diagram,
+} from "../main.js";
 
 class CellGraphics extends Graphics {
   cell_id: number;
@@ -11,6 +17,7 @@ let app = new Application();
 let points: Vertex[] = [];
 
 async function init() {
+  JC_diagram();
   await app.init({
     preference: "webgpu",
     antialias: true,

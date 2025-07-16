@@ -15,7 +15,6 @@ struct Contour {
 };
 
 extern "C" {
-EMSCRIPTEN_KEEPALIVE
 Contour *find_contours(uint8_t *pixelData, size_t width, size_t height);
 }
 #endif // CONTOUR_FINDER_H
