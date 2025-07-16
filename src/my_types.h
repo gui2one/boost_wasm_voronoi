@@ -15,6 +15,13 @@ template <typename T> struct WasmArray {
     length = size;
     data = new T[size];
   }
+
+  static WasmArray<T> fromVector(const std::vector<T> &vec) {
+    WasmArray<T> arr;
+    arr.alloc(vec.size());
+    std::copy(vec.begin(), vec.end(), arr.data);
+    return arr;
+  }
   void free() { delete[] data; }
 
   T &operator[](size_t index) { return data[index]; }
