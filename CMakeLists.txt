@@ -107,7 +107,7 @@ if(EMSCRIPTEN)
         "-sENVIRONMENT=web"
         "-sINITIAL_MEMORY=64MB"
         "-sNO_DISABLE_EXCEPTION_CATCHING"
-        "-sEXPORTED_FUNCTIONS=_malloc,_free, _build_diagram, _find_contours, _jvc_voronoi_example"
+        "-sEXPORTED_FUNCTIONS=_malloc,_free, _build_diagram, _find_contours, _jvc_voronoi_example, _free_diagram"
         "-sEXPORTED_RUNTIME_METHODS=['ccall','cwrap','getValue','setValue']"
     )
 

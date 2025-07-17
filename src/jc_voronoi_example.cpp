@@ -25,15 +25,9 @@
 // #define JCV_FLT_MAX 1.7976931348623157E+308
 #include "jc_voronoi.h"
 
-using gui2one::Cell;
-using gui2one::Diagram;
-using gui2one::Edge;
-using gui2one::Vertex;
-
 extern "C" {
 
-gui2one::Diagram *jvc_voronoi_example(float *_points, size_t len,
-                                      float *bounds) {
+Diagram *jvc_voronoi_example(float *_points, size_t len, float *bounds) {
 
   size_t NPOINT = (size_t)(len / 2);
   size_t i;
@@ -50,11 +44,6 @@ gui2one::Diagram *jvc_voronoi_example(float *_points, size_t len,
     points[i].y = _points[i * 2 + 1];
   }
 
-  // printf("# Seed sites\n");
-  // for (i = 0; i < NPOINT; i++) {
-  //   printf("%f %f\n", (double)points[i].x, (double)points[i].y);
-  // }
-
   jcv_diagram_generate(NPOINT, (const jcv_point *)points, &bounding_box, 0,
                        &diagram);
 
@@ -70,11 +59,11 @@ gui2one::Diagram *jvc_voronoi_example(float *_points, size_t len,
     cell.source_index = sites[i].index;
     // cell.num_vertices = sites[i].;
     graph_edge = sites[i].edges;
-    std::vector<Vertex> vertices;
+    std::vector<GVertex> vertices;
     int inc = 0;
     while (graph_edge) {
       // This approach will potentially print shared edges twice
-      Vertex v0;
+      GVertex v0;
       v0.x = (double)graph_edge->pos[0].x;
       v0.y = (double)graph_edge->pos[0].y;
       vertices.push_back(v0);
@@ -85,13 +74,13 @@ gui2one::Diagram *jvc_voronoi_example(float *_points, size_t len,
       graph_edge = graph_edge->next;
       inc++;
     }
-    cell.vertices = gui2one::WasmArray<Vertex>::fromVector(vertices);
+    cell.vertices = WasmArray<GVertex>::fromVector(vertices);
     // printf("cell vertices num : %d\n", cell.vertices.length);
     // cell.vertices.alloc(vertices.size());
     // for (int j = 0; j < vertices.size(); j++) {
     //   cell.vertices[j] = vertices[j];
     // }
-    result->cells[i] = cell;
+    result->cells.data[i] = cell;
   }
 
   jcv_diagram_free(&diagram);

@@ -31,13 +31,13 @@ async function init() {
     });
   }
 
-  // app.canvas.addEventListener("click", (e) => {
-  //   points.push({
-  //     x: e.offsetX,
-  //     y: e.offsetY,
-  //   });
-  //   build_diagram(app);
-  // });
+  app.canvas.addEventListener("click", (e) => {
+    points.push({
+      x: e.offsetX,
+      y: e.offsetY,
+    });
+    build_diagram(app);
+  });
 
   build_diagram(app);
 

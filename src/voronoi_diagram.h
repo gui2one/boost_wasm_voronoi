@@ -19,15 +19,13 @@ typedef VD::cell_type::source_category_type source_category_type;
 typedef rectangle_data<coordinate_type> rect_type;
 typedef point_data<coordinate_type> Point;
 typedef segment_data<coordinate_type> Segment;
-namespace gui2one {
 
 extern "C" {
 // rect_type compute_bounding_rect(const std::vector<Point> &points);
-rect_type compute_bounding_rect(Vertex *points, int size);
+rect_type compute_bounding_rect(GVertex *points, int size);
 
 Diagram *build_diagram(float *points, size_t length, float *bounds);
+void free_diagram(Diagram *diagram);
 }
-
-} // namespace gui2one
 
 #endif

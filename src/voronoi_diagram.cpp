@@ -5,7 +5,6 @@ https://www.boost.org/doc/libs/1_55_0/libs/polygon/example/voronoi_visualizer.cp
 
 #include "voronoi_diagram.h"
 
-namespace gui2one {
 extern "C" {
 
 point_data<double>
@@ -24,14 +23,14 @@ retrieve_point(const voronoi_cell<double> &cell,
   //   return high(segment_data_[index]);
   // }
 }
-rect_type compute_bounding_rect(Vertex *points, int size) {
+rect_type compute_bounding_rect(GVertex *points, int size) {
   int min_x = std::numeric_limits<int>::max();
   int min_y = std::numeric_limits<int>::max();
   int max_x = std::numeric_limits<int>::min();
   int max_y = std::numeric_limits<int>::min();
 
   for (size_t i = 0; i < size; i++) {
-    const Vertex &pt = points[i];
+    const GVertex &pt = points[i];
     if (pt.x < min_x)
       min_x = pt.x;
     if (pt.y < min_y)
@@ -114,13 +113,13 @@ Diagram *build_diagram(float *fpoints, size_t len, float *bounds) {
   diagram->cells.data = new Cell[vd.num_cells()];
 
   diagram->vertices.length = vd.num_vertices();
-  diagram->vertices.data = new Vertex[vd.num_vertices()];
+  diagram->vertices.data = new GVertex[vd.num_vertices()];
 
   diagram->edges.length = vd.num_edges();
   diagram->edges.data = new Edge[vd.num_edges()];
 
   for (size_t i = 0; i < diagram->vertices.length; i++) {
-    Vertex my_vertex;
+    GVertex my_vertex;
     my_vertex.x = vd.vertices()[i].x();
     my_vertex.y = vd.vertices()[i].y();
     diagram->vertices.data[i] = my_vertex;
@@ -135,7 +134,7 @@ Diagram *build_diagram(float *fpoints, size_t len, float *bounds) {
 
     const auto &cell = vd.cells()[i];
     Cell my_cell;
-    std::vector<Vertex> vertices_vector;
+    std::vector<GVertex> vertices_vector;
 
     const auto *edge = cell.incident_edge();
     const auto *start = edge;
@@ -164,7 +163,7 @@ Diagram *build_diagram(float *fpoints, size_t len, float *bounds) {
     my_cell.vertices.alloc(vertices_vector.size());
 
     for (size_t j = 0; j < vertices_vector.size(); j++) {
-      my_cell.vertices[j] = vertices_vector[j];
+      my_cell.vertices.data[j] = vertices_vector[j];
     }
 
     diagram->cells.data[i] = my_cell;
@@ -207,6 +206,21 @@ Diagram *build_diagram(float *fpoints, size_t len, float *bounds) {
 
   return diagram;
 }
-}
+void free_diagram(Diagram *diagram) {
+  if (!diagram)
+    return;
 
-} // namespace gui2one
+  // 1. Free cell vertex arrays
+  for (size_t i = 0; i < diagram->cells.length; ++i) {
+    diagram->cells.data[i].vertices.free(); // Each cell owns a vertex array
+  }
+
+  // 2. Free diagram-level arrays
+  diagram->vertices.free(); // vertex array at Diagram level
+  diagram->edges.free();    // edge array at Diagram level
+  diagram->cells.free();    // array of cells
+
+  // 3. Free the Diagram itself
+  delete diagram;
+}
+}

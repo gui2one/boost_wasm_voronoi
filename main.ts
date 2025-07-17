@@ -29,17 +29,6 @@ export type BoostDiagram = {
   cells: Cell[];
 };
 
-export function JC_diagram(_sites: Vertex[], _bounds?: number[]): BoostDiagram {
-  let ptr = voronoi._jvc_voronoi_example(_sites, _bounds);
-  // let reader = new MemoryReader(voronoi, ptr, true);
-
-  let jc_data = getMeshData(ptr);
-  console.log(jc_data);
-  // let vertices = read_wasm_array_at_offset(ptr, 0, 4, readVertex);
-  // console.log(vertices);
-
-  return jc_data;
-}
 export type Vertex = {
   x: number;
   y: number;
@@ -125,9 +114,11 @@ export function BuildDiagram(
 
   let data2 = getMeshData(diagram);
   // Free memory
-  voronoi._free(diagram);
-  voronoi._free(coords_c_array.ptr);
-  voronoi._free(bounds_c_array.ptr);
+
+  voronoi._free_diagram(diagram);
+  // voronoi._free(diagram);
+  // voronoi._free(coords_c_array.ptr);
+  // voronoi._free(bounds_c_array.ptr);
 
   return data2;
 }

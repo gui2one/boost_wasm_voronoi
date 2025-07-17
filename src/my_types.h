@@ -4,7 +4,6 @@
 
 #include "pch.hpp"
 
-namespace gui2one {
 template <typename T> struct WasmArray {
   size_t length;
   T *data;
@@ -22,30 +21,32 @@ template <typename T> struct WasmArray {
     std::copy(vec.begin(), vec.end(), arr.data);
     return arr;
   }
-  void free() { delete[] data; }
+  void free() {
+    delete[] data;
+    data = nullptr;
+    length = 0;
+  }
 
-  T &operator[](size_t index) { return data[index]; }
+  // T &operator[](size_t index) { return data[index]; }
 };
-struct Vertex {
+struct GVertex {
   double x;
   double y;
 };
 
 struct Edge {
-  Vertex vertex0;
-  Vertex vertex1;
+  GVertex vertex0;
+  GVertex vertex1;
 };
 struct Cell {
   size_t source_index;
-  WasmArray<Vertex> vertices;
+  WasmArray<GVertex> vertices;
 };
 
 struct Diagram {
-  WasmArray<Vertex> vertices;
+  WasmArray<GVertex> vertices;
   WasmArray<Edge> edges;
   WasmArray<Cell> cells;
 };
-
-}; // namespace gui2one
 
 #endif // MY_TYPES_H
