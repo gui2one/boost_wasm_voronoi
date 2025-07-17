@@ -33,9 +33,10 @@ export function JC_diagram() {
   let ptr = voronoi._jvc_voronoi_example();
   // let reader = new MemoryReader(voronoi, ptr, true);
 
-  console.log(ptr);
-  let vertices = read_wasm_array_at_offset(ptr, 0, 4, readVertex);
-  console.log(vertices);
+  let jc_data = getMeshData(ptr);
+  console.log(jc_data);
+  // let vertices = read_wasm_array_at_offset(ptr, 0, 4, readVertex);
+  // console.log(vertices);
 }
 export type Vertex = {
   x: number;
@@ -131,6 +132,7 @@ export function BuildDiagram(
 
   let data2 = getMeshData(diagram);
   // Free memory
+  console.log(data2);
 
   voronoi._free(diagram);
   voronoi._free(coords_c_array.ptr);
@@ -262,8 +264,6 @@ function getMeshData(meshPtr: number): BoostDiagram {
     12,
     readCell
   );
-
-  console.log(vertices, edges, cells);
 
   return { vertices, edges, cells };
 }

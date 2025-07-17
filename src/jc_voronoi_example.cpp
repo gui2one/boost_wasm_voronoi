@@ -25,7 +25,7 @@
 // #define JCV_FLT_MAX 1.7976931348623157E+308
 #include "jc_voronoi.h"
 
-#define NPOINT 3
+#define NPOINT 10
 
 using gui2one::Cell;
 using gui2one::Diagram;
@@ -81,18 +81,19 @@ gui2one::Diagram *jvc_voronoi_example(int argc, char **argv) {
       v0.x = (double)graph_edge->pos[0].x;
       v0.y = (double)graph_edge->pos[0].y;
       vertices.push_back(v0);
-      //   printf("%f %f\n", (double)graph_edge->pos[0].x,
-      //          (double)graph_edge->pos[0].y);
-      //   printf("%f %f\n", (double)graph_edge->pos[1].x,
-      //          (double)graph_edge->pos[1].y);
+      printf("%f %f\n", (double)graph_edge->pos[0].x,
+             (double)graph_edge->pos[0].y);
+      printf("%f %f\n", (double)graph_edge->pos[1].x,
+             (double)graph_edge->pos[1].y);
       graph_edge = graph_edge->next;
       inc++;
     }
-
-    cell.vertices.alloc(vertices.size());
-    for (int j = 0; j < vertices.size(); j++) {
-      cell.vertices[j] = vertices[j];
-    }
+    cell.vertices = gui2one::WasmArray<Vertex>::fromVector(vertices);
+    printf("cell vertices num : %d\n", cell.vertices.length);
+    // cell.vertices.alloc(vertices.size());
+    // for (int j = 0; j < vertices.size(); j++) {
+    //   cell.vertices[j] = vertices[j];
+    // }
     result->cells[i] = cell;
   }
 
