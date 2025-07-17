@@ -105,32 +105,17 @@ export function BuildDiagram(
 ): BoostDiagram {
   let coords;
   let bounds: Float32Array;
-  if (_sites === undefined) {
-    const numPoints = 20;
-    coords = new Float32Array(numPoints * 2);
-    for (let i = 0; i < coords.length; i++) {
-      coords[i] = Math.random() * 512;
-    }
-  } else {
-    coords = new Float32Array(_sites.length * 2);
-    for (let i = 0; i < _sites.length; i++) {
-      coords[i * 2] = _sites[i].x;
-      coords[i * 2 + 1] = _sites[i].y;
-    }
+
+  coords = new Float32Array(_sites.length * 2);
+  for (let i = 0; i < _sites.length; i++) {
+    coords[i * 2] = _sites[i].x;
+    coords[i * 2 + 1] = _sites[i].y;
   }
-  if (_bounds === undefined) {
-    bounds = new Float32Array([0, 0, 512, 512]);
-  } else {
-    bounds = new Float32Array(_bounds);
-  }
+
+  bounds = new Float32Array(_bounds!);
+
   const coords_c_array = float32Array_to_wasm_array(coords);
   const bounds_c_array = float32Array_to_wasm_array(bounds);
-
-  // const diagram = voronoi._build_diagram(
-  //   coords_c_array.ptr,
-  //   coords_c_array.len,
-  //   bounds_c_array.ptr
-  // );
 
   const diagram = voronoi._jvc_voronoi_example(
     coords_c_array.ptr,
@@ -140,11 +125,9 @@ export function BuildDiagram(
 
   let data2 = getMeshData(diagram);
   // Free memory
-  console.log(data2);
-
-  // voronoi._free(diagram);
-  // voronoi._free(coords_c_array.ptr);
-  // voronoi._free(bounds_c_array.ptr);
+  voronoi._free(diagram);
+  voronoi._free(coords_c_array.ptr);
+  voronoi._free(bounds_c_array.ptr);
 
   return data2;
 }
