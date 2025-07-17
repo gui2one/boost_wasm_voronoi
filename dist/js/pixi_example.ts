@@ -17,7 +17,6 @@ let app = new Application();
 let points: Vertex[] = [];
 
 async function init() {
-  JC_diagram();
   await app.init({
     preference: "webgpu",
     antialias: true,
@@ -41,6 +40,7 @@ async function init() {
   // });
 
   build_diagram(app);
+
   contours_test();
 }
 
@@ -51,6 +51,8 @@ function build_diagram(app: Application) {
     app.screen.width,
     app.screen.height,
   ]);
+
+  // diagram = JC_diagram(points, [0, 0, app.screen.width, app.screen.height]);
   //   console.log(diagram);
 
   display_cells(app, diagram);

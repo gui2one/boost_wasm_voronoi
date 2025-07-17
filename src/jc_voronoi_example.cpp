@@ -25,8 +25,6 @@
 // #define JCV_FLT_MAX 1.7976931348623157E+308
 #include "jc_voronoi.h"
 
-#define NPOINT 10
-
 using gui2one::Cell;
 using gui2one::Diagram;
 using gui2one::Edge;
@@ -34,12 +32,12 @@ using gui2one::Vertex;
 
 extern "C" {
 
-gui2one::Diagram *jvc_voronoi_example(int argc, char **argv) {
-  (void)argc;
-  (void)argv;
+gui2one::Diagram *jvc_voronoi_example(float *_points, size_t len,
+                                      float *bounds) {
 
-  int i;
-  jcv_rect bounding_box = {{0.0f, 0.0f}, {1.0f, 1.0f}};
+  size_t NPOINT = (size_t)(len / 2);
+  size_t i;
+  jcv_rect bounding_box = {{bounds[0], bounds[1]}, {bounds[2], bounds[3]}};
   jcv_diagram diagram;
   jcv_point points[NPOINT];
   const jcv_site *sites;
@@ -47,16 +45,15 @@ gui2one::Diagram *jvc_voronoi_example(int argc, char **argv) {
 
   memset(&diagram, 0, sizeof(jcv_diagram));
 
-  srand(0);
   for (i = 0; i < NPOINT; i++) {
-    points[i].x = ((float)rand() / (1.0f + (float)RAND_MAX));
-    points[i].y = ((float)rand() / (1.0f + (float)RAND_MAX));
+    points[i].x = _points[i * 2];
+    points[i].y = _points[i * 2 + 1];
   }
 
-  printf("# Seed sites\n");
-  for (i = 0; i < NPOINT; i++) {
-    printf("%f %f\n", (double)points[i].x, (double)points[i].y);
-  }
+  // printf("# Seed sites\n");
+  // for (i = 0; i < NPOINT; i++) {
+  //   printf("%f %f\n", (double)points[i].x, (double)points[i].y);
+  // }
 
   jcv_diagram_generate(NPOINT, (const jcv_point *)points, &bounding_box, 0,
                        &diagram);
@@ -81,15 +78,15 @@ gui2one::Diagram *jvc_voronoi_example(int argc, char **argv) {
       v0.x = (double)graph_edge->pos[0].x;
       v0.y = (double)graph_edge->pos[0].y;
       vertices.push_back(v0);
-      printf("%f %f\n", (double)graph_edge->pos[0].x,
-             (double)graph_edge->pos[0].y);
-      printf("%f %f\n", (double)graph_edge->pos[1].x,
-             (double)graph_edge->pos[1].y);
+      // printf("%f %f\n", (double)graph_edge->pos[0].x,
+      //        (double)graph_edge->pos[0].y);
+      // printf("%f %f\n", (double)graph_edge->pos[1].x,
+      //        (double)graph_edge->pos[1].y);
       graph_edge = graph_edge->next;
       inc++;
     }
     cell.vertices = gui2one::WasmArray<Vertex>::fromVector(vertices);
-    printf("cell vertices num : %d\n", cell.vertices.length);
+    // printf("cell vertices num : %d\n", cell.vertices.length);
     // cell.vertices.alloc(vertices.size());
     // for (int j = 0; j < vertices.size(); j++) {
     //   cell.vertices[j] = vertices[j];

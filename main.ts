@@ -29,14 +29,16 @@ export type BoostDiagram = {
   cells: Cell[];
 };
 
-export function JC_diagram() {
-  let ptr = voronoi._jvc_voronoi_example();
+export function JC_diagram(_sites: Vertex[], _bounds?: number[]): BoostDiagram {
+  let ptr = voronoi._jvc_voronoi_example(_sites, _bounds);
   // let reader = new MemoryReader(voronoi, ptr, true);
 
   let jc_data = getMeshData(ptr);
   console.log(jc_data);
   // let vertices = read_wasm_array_at_offset(ptr, 0, 4, readVertex);
   // console.log(vertices);
+
+  return jc_data;
 }
 export type Vertex = {
   x: number;
@@ -104,7 +106,7 @@ export function BuildDiagram(
   let coords;
   let bounds: Float32Array;
   if (_sites === undefined) {
-    const numPoints = 500;
+    const numPoints = 20;
     coords = new Float32Array(numPoints * 2);
     for (let i = 0; i < coords.length; i++) {
       coords[i] = Math.random() * 512;
@@ -124,7 +126,13 @@ export function BuildDiagram(
   const coords_c_array = float32Array_to_wasm_array(coords);
   const bounds_c_array = float32Array_to_wasm_array(bounds);
 
-  const diagram = voronoi._build_diagram(
+  // const diagram = voronoi._build_diagram(
+  //   coords_c_array.ptr,
+  //   coords_c_array.len,
+  //   bounds_c_array.ptr
+  // );
+
+  const diagram = voronoi._jvc_voronoi_example(
     coords_c_array.ptr,
     coords_c_array.len,
     bounds_c_array.ptr
@@ -134,9 +142,9 @@ export function BuildDiagram(
   // Free memory
   console.log(data2);
 
-  voronoi._free(diagram);
-  voronoi._free(coords_c_array.ptr);
-  voronoi._free(bounds_c_array.ptr);
+  // voronoi._free(diagram);
+  // voronoi._free(coords_c_array.ptr);
+  // voronoi._free(bounds_c_array.ptr);
 
   return data2;
 }
