@@ -117,9 +117,15 @@ export function BuildDiagram(
 
   voronoi._free_diagram(diagram);
   // voronoi._free(diagram);
-  // voronoi._free(coords_c_array.ptr);
-  // voronoi._free(bounds_c_array.ptr);
+  voronoi._free(coords_c_array.ptr);
+  voronoi._free(bounds_c_array.ptr);
 
+  console.log(
+    "Memory used: ",
+    // @ts-ignore
+    Math.round(performance.memory.usedJSHeapSize / 1024 / 1024),
+    "MB"
+  );
   return data2;
 }
 

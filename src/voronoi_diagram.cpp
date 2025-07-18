@@ -222,5 +222,6 @@ void free_diagram(Diagram *diagram) {
 
   // 3. Free the Diagram itself
   delete diagram;
+  printf("freed all DATA ?\n");
 }
 }
