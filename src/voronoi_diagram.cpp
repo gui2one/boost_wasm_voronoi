@@ -96,6 +96,7 @@ void clip_infinite_edge(const voronoi_edge<double> &edge,
   }
 }
 
+EMSCRIPTEN_KEEPALIVE
 Diagram *build_diagram(float *fpoints, size_t len, float *bounds) {
   std::vector<Point> sites;
   std::vector<Segment> segments;
@@ -206,6 +207,8 @@ Diagram *build_diagram(float *fpoints, size_t len, float *bounds) {
 
   return diagram;
 }
+
+EMSCRIPTEN_KEEPALIVE
 void free_diagram(Diagram *diagram) {
   if (!diagram)
     return;

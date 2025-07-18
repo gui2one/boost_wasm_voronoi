@@ -51,7 +51,7 @@ function build_diagram(app: Application) {
 }
 function display_cells(app: Application, diagram: BoostDiagram) {
   cells_container.removeChildren();
-
+  app.stage.updateCacheTexture();
   for (let cell of diagram.cells) {
     // let clockwise = isClockwise(cell.vertices);
     // if (!clockwise) {

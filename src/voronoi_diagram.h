@@ -24,7 +24,10 @@ extern "C" {
 // rect_type compute_bounding_rect(const std::vector<Point> &points);
 rect_type compute_bounding_rect(GVertex *points, int size);
 
+EMSCRIPTEN_KEEPALIVE
 Diagram *build_diagram(float *points, size_t length, float *bounds);
+
+EMSCRIPTEN_KEEPALIVE
 void free_diagram(Diagram *diagram);
 }
 

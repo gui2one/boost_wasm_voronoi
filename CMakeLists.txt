@@ -94,6 +94,7 @@ if(EMSCRIPTEN)
     target_compile_options(
         ${PROJECT_NAME} PUBLIC
         "-sSHARED_MEMORY=0" 
+        "-fsanitize=leak"        
     )
         
     target_link_options(
@@ -109,6 +110,7 @@ if(EMSCRIPTEN)
         "-sNO_DISABLE_EXCEPTION_CATCHING"
         "-sEXPORTED_FUNCTIONS=_malloc,_free, _build_diagram, _find_contours, _jvc_voronoi_example, _free_diagram"
         "-sEXPORTED_RUNTIME_METHODS=['ccall','cwrap','getValue','setValue']"
+
     )
 
 
