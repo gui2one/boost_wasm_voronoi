@@ -2,210 +2,78 @@
 code for clipping infinite edges found here :
 https://www.boost.org/doc/libs/1_55_0/libs/polygon/example/voronoi_visualizer.cpp
 */
+#define JC_VORONOI_IMPLEMENTATION
+// If you wish to use doubles
+// #define JCV_REAL_TYPE double
+// #define JCV_FABS fabs
+// #define JCV_ATAN2 atan2
+// #define JCV_CEIL ceil
+// #define JCV_FLOOR floor
+// #define JCV_FLT_MAX 1.7976931348623157E+308
 
 #include "voronoi_diagram.h"
 
 extern "C" {
 
-point_data<double>
-retrieve_point(const voronoi_cell<double> &cell,
-               const std::vector<point_data<double>> &point_data_) {
-  source_index_type index = cell.source_index();
-  source_category_type category = cell.source_category();
-  if (category == boost::polygon::SOURCE_CATEGORY_SINGLE_POINT) {
-    return point_data_[index];
-  }
-  index -= point_data_.size();
-  return point_data_[index];
-  // if (category == boost::polygon::SOURCE_CATEGORY_SEGMENT_START_POINT) {
-  //   return low(segment_data_[index]);
-  // } else {
-  //   return high(segment_data_[index]);
-  // }
-}
-rect_type compute_bounding_rect(GVertex *points, int size) {
-  int min_x = std::numeric_limits<int>::max();
-  int min_y = std::numeric_limits<int>::max();
-  int max_x = std::numeric_limits<int>::min();
-  int max_y = std::numeric_limits<int>::min();
-
-  for (size_t i = 0; i < size; i++) {
-    const GVertex &pt = points[i];
-    if (pt.x < min_x)
-      min_x = pt.x;
-    if (pt.y < min_y)
-      min_y = pt.y;
-    if (pt.x > max_x)
-      max_x = pt.x;
-    if (pt.y > max_y)
-      max_y = pt.y;
-  }
-
-  return rect_type(min_x, min_y, max_x, max_y);
-}
-
-void clip_infinite_edge(const voronoi_edge<double> &edge,
-                        std::vector<point_data<double>> &clipped_edge,
-                        rect_type &brect_,
-                        std::vector<point_data<double>> &point_data_) {
-  const voronoi_cell<double> &cell1 = *edge.cell();
-  const voronoi_cell<double> &cell2 = *edge.twin()->cell();
-  point_data<double> origin, direction;
-  // Infinite edges could not be created by two segment sites.
-  if (cell1.contains_point() && cell2.contains_point()) {
-    point_data<double> p1 = retrieve_point(cell1, point_data_);
-    point_data<double> p2 = retrieve_point(cell2, point_data_);
-    origin.x((p1.x() + p2.x()) * 0.5);
-    origin.y((p1.y() + p2.y()) * 0.5);
-    direction.x(p1.y() - p2.y());
-    direction.y(p2.x() - p1.x());
-  }
-  // else {
-  //  origin = cell1.contains_segment() ? retrieve_point(cell2)
-  //                                    : retrieve_point(cell1);
-  //  segment_type segment = cell1.contains_segment() ?
-  //  retrieve_segment(cell1)
-  //                                                  :
-  //                                                  retrieve_segment(cell2);
-  //  coordinate_type dx = high(segment).x() - low(segment).x();
-  //  coordinate_type dy = high(segment).y() - low(segment).y();
-  //  if ((low(segment) == origin) ^ cell1.contains_point()) {
-  //    direction.x(dy);
-  //    direction.y(-dx);
-  //  } else {
-  //    direction.x(-dy);
-  //    direction.y(dx);
-  //  }
-  //}
-  coordinate_type side = xh(brect_) - xl(brect_);
-  coordinate_type koef =
-      side / (std::max)(fabs(direction.x()), fabs(direction.y()));
-  if (edge.vertex0() == NULL) {
-    clipped_edge.push_back(point_data<double>(
-        origin.x() - direction.x() * koef, origin.y() - direction.y() * koef));
-  } else {
-    clipped_edge.push_back(
-        point_data<double>(edge.vertex0()->x(), edge.vertex0()->y()));
-  }
-  if (edge.vertex1() == NULL) {
-    clipped_edge.push_back(point_data<double>(
-        origin.x() + direction.x() * koef, origin.y() + direction.y() * koef));
-  } else {
-    clipped_edge.push_back(
-        point_data<double>(edge.vertex1()->x(), edge.vertex1()->y()));
-  }
-}
-
 EMSCRIPTEN_KEEPALIVE
-Diagram *build_diagram(float *fpoints, size_t len, float *bounds) {
-  std::vector<Point> sites;
-  std::vector<Segment> segments;
-  for (size_t i = 0; i + 1 < len; i += 2) {
-    sites.push_back({fpoints[i], fpoints[i + 1]});
+Diagram *build_diagram(float *_points, size_t len, float *bounds) {
+  size_t NPOINT = (size_t)(len / 2);
+  size_t i;
+  jcv_rect bounding_box = {{bounds[0], bounds[1]}, {bounds[2], bounds[3]}};
+  jcv_diagram diagram;
+  jcv_point points[NPOINT];
+  const jcv_site *sites;
+  jcv_graphedge *graph_edge;
+
+  memset(&diagram, 0, sizeof(jcv_diagram));
+
+  for (i = 0; i < NPOINT; i++) {
+    points[i].x = _points[i * 2];
+    points[i].y = _points[i * 2 + 1];
   }
 
-  VD vd;
-  construct_voronoi(sites.begin(), sites.end(), segments.begin(),
-                    segments.end(), &vd);
+  jcv_diagram_generate(NPOINT, (const jcv_point *)points, &bounding_box, 0,
+                       &diagram);
 
-  Diagram *diagram = new Diagram();
+  Diagram *result = new Diagram();
 
-  diagram->cells.length = vd.num_cells();
-  diagram->cells.data = new Cell[vd.num_cells()];
+  //   result->vertices.data = diagram.internal->sites;
+  printf("# Edges\n");
+  result->cells.alloc(diagram.numsites);
+  sites = jcv_diagram_get_sites(&diagram);
+  for (i = 0; i < diagram.numsites; i++) {
 
-  diagram->vertices.length = vd.num_vertices();
-  diagram->vertices.data = new GVertex[vd.num_vertices()];
-
-  diagram->edges.length = vd.num_edges();
-  diagram->edges.data = new Edge[vd.num_edges()];
-
-  for (size_t i = 0; i < diagram->vertices.length; i++) {
-    GVertex my_vertex;
-    my_vertex.x = vd.vertices()[i].x();
-    my_vertex.y = vd.vertices()[i].y();
-    diagram->vertices.data[i] = my_vertex;
-    // std::cout << my_vertex.x << "," << my_vertex.y << std::endl;
-  }
-
-  rect_type brect_2 = boost::polygon::construct<rect_type>(
-      bounds[0] - 500.0f, bounds[1] - 500.0f, bounds[2] + 500.0f,
-      bounds[3] + 500.0f);
-
-  for (size_t i = 0; i < vd.num_cells(); i++) {
-
-    const auto &cell = vd.cells()[i];
-    Cell my_cell;
-    std::vector<GVertex> vertices_vector;
-
-    const auto *edge = cell.incident_edge();
-    const auto *start = edge;
-
-    do {
-
-      edge = edge->next();
-      if (edge->is_infinite()) {
-        std::vector<point_data<double>> clipped_edge;
-        clip_infinite_edge(*edge, clipped_edge, brect_2, sites);
-        // Add both endpoints of clipped infinite edge
-        for (const auto &pt : clipped_edge) {
-          vertices_vector.push_back({pt.x(), pt.y()});
-        }
-      } else {
-        if (edge->vertex0()) {
-          vertices_vector.push_back(
-              {edge->vertex0()->x(), edge->vertex0()->y()});
-        }
-        // You can also choose to add edge->vertex1() for completeness
-      }
-
-    } while (edge != start);
-
-    my_cell.source_index = cell.source_index();
-    my_cell.vertices.alloc(vertices_vector.size());
-
-    for (size_t j = 0; j < vertices_vector.size(); j++) {
-      my_cell.vertices.data[j] = vertices_vector[j];
+    Cell cell;
+    cell.source_index = sites[i].index;
+    // cell.num_vertices = sites[i].;
+    graph_edge = sites[i].edges;
+    std::vector<GVertex> vertices;
+    int inc = 0;
+    while (graph_edge) {
+      // This approach will potentially print shared edges twice
+      GVertex v0;
+      v0.x = (double)graph_edge->pos[0].x;
+      v0.y = (double)graph_edge->pos[0].y;
+      vertices.push_back(v0);
+      // printf("%f %f\n", (double)graph_edge->pos[0].x,
+      //        (double)graph_edge->pos[0].y);
+      // printf("%f %f\n", (double)graph_edge->pos[1].x,
+      //        (double)graph_edge->pos[1].y);
+      graph_edge = graph_edge->next;
+      inc++;
     }
-
-    diagram->cells.data[i] = my_cell;
+    cell.vertices = WasmArray<GVertex>::fromVector(vertices);
+    // printf("cell vertices num : %d\n", cell.vertices.length);
+    // cell.vertices.alloc(vertices.size());
+    // for (int j = 0; j < vertices.size(); j++) {
+    //   cell.vertices[j] = vertices[j];
+    // }
+    result->cells[i] = cell;
   }
 
-  for (size_t i = 0; i < vd.num_edges(); i++) {
-    Edge my_edge;
+  jcv_diagram_free(&diagram);
 
-    if (vd.edges()[i].is_infinite()) {
-      std::vector<point_data<double>> clipped_edge;
-
-      clip_infinite_edge(vd.edges()[i], clipped_edge, brect_2, sites);
-      my_edge.vertex0.x = clipped_edge[0].x();
-      my_edge.vertex0.y = clipped_edge[0].y();
-      my_edge.vertex1.x = clipped_edge[1].x();
-      my_edge.vertex1.y = clipped_edge[1].y();
-
-    } else {
-
-      const auto &vtx0 = vd.edges()[i].vertex0();
-      const auto &vtx1 = vd.edges()[i].vertex1();
-      my_edge.vertex0.x = vtx0->x();
-      my_edge.vertex0.y = vtx0->y();
-
-      my_edge.vertex1.x = vtx1->x();
-      my_edge.vertex1.y = vtx1->y();
-
-      double dist = (vtx1->x() - vtx0->x()) * (vtx1->x() - vtx0->x()) +
-                    (vtx1->y() - vtx0->y()) * (vtx1->y() - vtx0->y());
-    }
-
-    diagram->edges.data[i] = my_edge;
-  }
-
-  std::cout << "num vertices (cpp): " << diagram->vertices.length << std::endl;
-  std::cout << "num edges (cpp): " << diagram->edges.length << std::endl;
-  std::cout << "num cells (cpp): " << diagram->cells.length << std::endl;
-  // std::cout << "bounds (cpp): " << bounds[0] << "," << bounds[1] << ","
-  //           << bounds[2] << "," << bounds[3] << std::endl;
-
-  return diagram;
+  return result;
 }
 
 EMSCRIPTEN_KEEPALIVE

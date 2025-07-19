@@ -1,1 +1,1 @@
-tsc ./build_wasm/boost_voronoi.js --declaration --allowJs --emitDeclarationOnly --outDir build_wasm
+tsc ./build_wasm/voronoi.js --declaration --allowJs --emitDeclarationOnly --outDir build_wasm

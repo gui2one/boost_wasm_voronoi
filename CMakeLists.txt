@@ -24,13 +24,13 @@ if(MSVC)
 endif()
     
 message(STATUS "Opencv dir: ${OpenCV_DIR}")
-project(boost_voronoi)
+project(voronoi)
 
 
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
 set(INCLUDE_DIRS
-    D:/Boost/include/boost-1_88
+    # D:/Boost/include/boost-1_88
     C:/Users/Sprayfly/AppData/Local/emsdk/upstream/emscripten
     ${CMAKE_CURRENT_BINARY_DIR}/_deps/jc_voronoi-src/src/
     "D:\\dev\\opencv\\build\\install\\include"
@@ -46,7 +46,6 @@ add_executable(${PROJECT_NAME}
     src/contour_finder.cpp
     src/algorithms/PoissonDiscSampling.cpp
     src/algorithms/RNDGenerator.cpp
-    src/jc_voronoi_example.cpp
 )
 
 FetchDependencyAndMakeAvailable(glm "https://github.com/g-truc/glm.git" "2d4c4b4dd31fde06cfffad7915c2b3006402322f")
@@ -68,9 +67,7 @@ target_link_directories(${PROJECT_NAME} PUBLIC
 # Detect compiler and disable warnings accordingly
 if(MSVC)
     # Link or compile with /MT for MSVC
-
     target_compile_options(${PROJECT_NAME} PUBLIC /MD)
-
 
     # Disable warnings for MSVC
     target_compile_options(${PROJECT_NAME} PUBLIC /w)
@@ -80,9 +77,9 @@ else()
 endif()
 
 if( MSVC)
-
-target_link_options(${PROJECT_NAME} PUBLIC /NODEFAULTLIB:libcmt.lib)
-target_link_libraries(${PROJECT_NAME} opencv_world4130.lib)
+    # this does not compile (MSVC)
+    target_link_options(${PROJECT_NAME} PUBLIC /NODEFAULTLIB:libcmt.lib)
+    target_link_libraries(${PROJECT_NAME} opencv_world4130.lib)
 endif()
 if(EMSCRIPTEN)
 
@@ -94,7 +91,7 @@ if(EMSCRIPTEN)
     target_compile_options(
         ${PROJECT_NAME} PUBLIC
         "-sSHARED_MEMORY=0" 
-        "-fsanitize=leak"        
+        # "-fsanitize=leak"        
     )
         
     target_link_options(
@@ -108,7 +105,7 @@ if(EMSCRIPTEN)
         "-sENVIRONMENT=web"
         "-sINITIAL_MEMORY=64MB"
         "-sNO_DISABLE_EXCEPTION_CATCHING"
-        "-sEXPORTED_FUNCTIONS=_malloc,_free, _build_diagram, _find_contours, _jvc_voronoi_example, _free_diagram"
+        "-sEXPORTED_FUNCTIONS=_malloc,_free, _build_diagram, _find_contours, _free_diagram"
         "-sEXPORTED_RUNTIME_METHODS=['ccall','cwrap','getValue','setValue']"
 
     )

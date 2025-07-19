@@ -1,4 +1,4 @@
-import Voronoi from "./build_wasm/boost_voronoi.js";
+import Voronoi from "./build_wasm/voronoi.js";
 import { MemoryReader } from "./js/memory_reader";
 
 export interface WasmMemory {
@@ -106,7 +106,7 @@ export function BuildDiagram(
   const coords_c_array = float32Array_to_wasm_array(coords);
   const bounds_c_array = float32Array_to_wasm_array(bounds);
 
-  const diagram = voronoi._jvc_voronoi_example(
+  const diagram = voronoi._build_diagram(
     coords_c_array.ptr,
     coords_c_array.len,
     bounds_c_array.ptr
