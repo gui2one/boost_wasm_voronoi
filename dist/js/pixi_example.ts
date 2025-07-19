@@ -50,15 +50,23 @@ function build_diagram(app: Application) {
   display_cells(app, diagram);
 }
 function display_cells(app: Application, diagram: BoostDiagram) {
+  while (cells_container.children.length > 0) {
+    const child = cells_container.getChildAt(0) as Graphics;
+    cells_container.removeChild(child);
+    child.destroy(true);
+  }
   cells_container.removeChildren();
 
+  // cells_container = new Container();
+  // cells_container = null;
+  // app.stage.addChild(cells_container);
   for (let cell of diagram.cells) {
     // let clockwise = isClockwise(cell.vertices);
     // if (!clockwise) {
     //   cell.vertices.reverse();
     // }
     let g = new CellGraphics();
-    g.interactive = true;
+    // g.interactive = true;
     g.cell_id = cell.source_index;
     g.setFillStyle({ color: 0xffffff, alpha: 1.0 });
     g.setStrokeStyle({ width: 1, color: 0x000000 });
@@ -67,17 +75,6 @@ function display_cells(app: Application, diagram: BoostDiagram) {
       .stroke();
 
     cells_container.addChild(g);
-
-    // g.addEventListener("mousedown", (e: Event) => {
-    //   let g = e.target as CellGraphics;
-    //   g.tint = 0xff0000;
-    //   console.log(cell);
-    // });
-
-    // g.addEventListener("mouseup", (e: Event) => {
-    //   let g = e.target as CellGraphics;
-    //   g.tint = 0xffffff;
-    // });
   }
 }
 

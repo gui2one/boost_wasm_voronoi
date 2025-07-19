@@ -80,7 +80,7 @@ Diagram *jvc_voronoi_example(float *_points, size_t len, float *bounds) {
     // for (int j = 0; j < vertices.size(); j++) {
     //   cell.vertices[j] = vertices[j];
     // }
-    result->cells.data[i] = cell;
+    result->cells[i] = cell;
   }
 
   jcv_diagram_free(&diagram);

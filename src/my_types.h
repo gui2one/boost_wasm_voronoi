@@ -27,7 +27,7 @@ template <typename T> struct WasmArray {
     length = 0;
   }
 
-  // T &operator[](size_t index) { return data[index]; }
+  T &operator[](size_t index) { return data[index]; }
 };
 struct GVertex {
   double x;
