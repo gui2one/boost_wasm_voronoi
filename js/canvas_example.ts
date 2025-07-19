@@ -21,7 +21,7 @@ let sites_color = new ColorWithAlpha(0, 0, 0, 0.9);
 document.body.appendChild(canvas);
 let coords = [];
 let sites: Vertex[] = [];
-for (let i = 0; i < 3; i++) {
+for (let i = 0; i < 3000; i++) {
   sites.push({
     x: Math.random() * canvas.width,
     y: Math.random() * canvas.height,
