@@ -57,14 +57,7 @@ function display_cells(app: Application, diagram: BoostDiagram) {
   }
   cells_container.removeChildren();
 
-  // cells_container = new Container();
-  // cells_container = null;
-  // app.stage.addChild(cells_container);
   for (let cell of diagram.cells) {
-    // let clockwise = isClockwise(cell.vertices);
-    // if (!clockwise) {
-    //   cell.vertices.reverse();
-    // }
     let g = new CellGraphics();
     // g.interactive = true;
     g.cell_id = cell.source_index;
